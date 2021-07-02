@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Snap It</string>
+    <string name="Api_key">CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="setting_array">
+        <item>Privacy Policy</item>
+        <item>Logout</item>
+    </string-array>
+
+
+</resources>

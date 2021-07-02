@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.MapFragment">
+
+    <com.huawei.hms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mapview_mapviewdemo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        map:cameraTargetLat="48.893478"
+        map:cameraTargetLng="2.334595"
+        map:cameraZoom="10">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/current_location_btn"
+                android:layout_width="wrap_content"
+                android:backgroundTint="#EEE"
+                android:src="@drawable/aim"
+                android:layout_margin="20px"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:backgroundTint="#EEE"
+                android:layout_margin="20px"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </com.huawei.hms.maps.MapView>
+
+</FrameLayout>
