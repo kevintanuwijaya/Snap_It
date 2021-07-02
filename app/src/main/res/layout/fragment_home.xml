@@ -43,7 +43,9 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:text="Category"
+                    android:fontFamily="@font/stardos_stencil"
                     android:textSize="15dp" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_site"
                     android:layout_width="match_parent"
@@ -53,7 +55,10 @@
                     android:id="@+id/home_text2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="text2"/>
+                    android:padding="15dp"
+                    android:text="Articel"
+                    android:fontFamily="@font/stardos_stencil" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_articel"
                     android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package kevin.com.snapit.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,10 +9,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import kevin.com.snapit.ArticelDetailActivity;
+import kevin.com.snapit.MainActivity;
 import kevin.com.snapit.Model.Articel;
 import kevin.com.snapit.R;
 
@@ -41,7 +46,9 @@ public class ArticelAdapter extends RecyclerView.Adapter<ArticelAdapter.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                Intent intent = new Intent(context,ArticelDetailActivity.class);
+                intent.putExtra("ARTICEL",articels.get(position));
+                context.startActivity(intent);
             }
         });
     }
