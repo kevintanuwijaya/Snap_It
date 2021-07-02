@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.HomeFragment">
+    tools:context=".Fragment.SearchFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -35,41 +35,11 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/home_text1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:text="Category"
-                    android:textSize="15dp" />
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycle_site"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/home_text2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="text2"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycle_articel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/home_text3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="text2"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycle_nearest"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"/>
 
             </LinearLayout>
         </ScrollView>
     </RelativeLayout>
-
-
 
 </FrameLayout>
