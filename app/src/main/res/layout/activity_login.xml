@@ -7,9 +7,15 @@
     tools:context=".LoginActivity">
 
     <ImageView
+        android:layout_width="177dp"
+        android:layout_height="187dp"
+        android:layout_marginBottom="132dp"
         android:src="@drawable/camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_item"
+        android:padding="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/login_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/login_btn"
@@ -18,7 +24,7 @@
         android:adjustViewBounds="true"
         android:background="@color/white"
         android:scaleType="fitCenter"
-        android:src="@drawable/huaweiLoginButton"
+        android:src="@drawable/huweiloginbutton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
