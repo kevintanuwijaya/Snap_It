@@ -5,57 +5,62 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import kevin.com.snapit.Model.Icon;
+import kevin.com.snapit.Model.Articel;
 import kevin.com.snapit.R;
 
-public class HomeIconAdapter extends RecyclerView.Adapter<HomeIconAdapter.ViewHolder> {
+public class ArticelAdapter extends RecyclerView.Adapter<ArticelAdapter.ViewHolder> {
 
     private Context context;
-    private ArrayList<Icon> iconList;
+    private ArrayList<Articel> articels;
 
-    public HomeIconAdapter(Context context, ArrayList<Icon> iconList) {
+    public ArticelAdapter(Context context, ArrayList<Articel> articels) {
         this.context = context;
-        this.iconList = iconList;
+        this.articels = articels;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.home_icon_column,parent,false);
+        View view = layoutInflater.inflate(R.layout.articel_home_column,parent,false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.icon.setImageResource(iconList.get(position).getImage());
+        holder.image.setImageResource(articels.get(position).getImage());
+        holder.title.setText(articels.get(position).getTitle());
+        holder.author.setText(articels.get(position).getAuthor());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Clicked: "+iconList.get(position).getName(),Toast.LENGTH_SHORT).show();
+                
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return iconList.size();
+        return articels.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView icon;
+        private ImageView image;
+        private TextView title,author;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            icon = itemView.findViewById(R.id.icon_image);
+            image = itemView.findViewById(R.id.home_articel_image);
+            title = itemView.findViewById(R.id.articel_title);
+            author = itemView.findViewById(R.id.articel_author);
         }
     }
 }

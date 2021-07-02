@@ -21,5 +21,19 @@
         <item>amusementpark</item>
     </string-array>
 
+    <string-array name="articelTitle">
+        <item>My 50 Best Travel Tips After 10 Years Traveling The World</item>
+        <item>25 Things You Should Do Before Boarding a Plane, According to a Frequent Flier</item>
+    </string-array>
+
+    <string-array name="articelContain">
+        <item>My traveling started when I quit my job and took a one-way flight from Miami to Guatemala, leaping nervously into the unknown and leaving much of my old life behind while embarking on an epic adventure around the world.</item>
+        <item>B</item>
+    </string-array>
+
+    <string-array name="articelAuthor">
+        <item>Matthew Karsten</item>
+        <item>ERIC ROSEN</item>
+    </string-array>
 
 </resources>

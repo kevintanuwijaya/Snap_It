@@ -14,7 +14,9 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
+import kevin.com.snapit.Adapter.ArticelAdapter;
 import kevin.com.snapit.Adapter.HomeIconAdapter;
+import kevin.com.snapit.Model.Articel;
 import kevin.com.snapit.Model.Icon;
 import kevin.com.snapit.R;
 
@@ -34,8 +36,9 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private RecyclerView recycler_site;
+    private RecyclerView recycler_site,recycler_articel;
     private ArrayList<Icon> iconList = new ArrayList<Icon>();
+    private ArrayList<Articel> articelList = new ArrayList<Articel>();
 
 
 
@@ -77,7 +80,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home,null);
         recycler_site = view.findViewById(R.id.recycle_site);
-        Log.d("RECYCLE","MASUK");
+        recycler_articel = view.findViewById(R.id.recycle_articel);
+
         return view;
     }
 
@@ -92,29 +96,38 @@ public class HomeFragment extends Fragment {
         recycler_site.setAdapter(iconAdapter);
         recycler_site.setLayoutManager(iconLayout);
 
+        LinearLayoutManager articelLayout = new LinearLayoutManager(getActivity());
+        articelLayout.setOrientation(RecyclerView.HORIZONTAL);
+
+        ArticelAdapter articelAdapter = new ArticelAdapter(getActivity(),articelList);
+        recycler_articel.setAdapter(articelAdapter);
+        recycler_articel.setLayoutManager(articelLayout);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        recycler_site.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
     }
 
     private void init(){
-        int[] images = {R.drawable.restaurant,R.drawable.petrol,R.drawable.onlineshopping,R.drawable.museum,R.drawable.hotel,R.drawable.hospital,R.drawable.cinema,R.drawable.bank,R.drawable.amusementpark};
+        int[] iconImages = {R.drawable.restaurant,R.drawable.petrol,R.drawable.onlineshopping,R.drawable.museum,R.drawable.hotel,R.drawable.hospital,R.drawable.cinema,R.drawable.bank,R.drawable.amusementpark};
         String[] iconName = getResources().getStringArray(R.array.icon);
 
-        for(int i=0 ; i<images.length ; i++){
-            Icon icon = new Icon(images[i],iconName[i]);
+        for(int i=0 ; i<iconImages.length ; i++){
+            Icon icon = new Icon(iconImages[i],iconName[i]);
             iconList.add(icon);
         }
 
+        int[] articelImages = {R.drawable.articel1,R.drawable.articel2};
+        String[] articelTitle = getResources().getStringArray(R.array.articelTitle);
+        String[] articelContain = getResources().getStringArray(R.array.articelContain);
+        String[] articelAuthor = getResources().getStringArray(R.array.articelAuthor);
+        Log.d("RECYCLE","MASUK");
+
+
+        for(int  j=0 ; j<articelImages.length ; j++){
+            Articel articel = new Articel(articelImages[j],articelContain[j],articelTitle[j],articelAuthor[j]);
+            articelList.add(articel);
+        }
     }
 }

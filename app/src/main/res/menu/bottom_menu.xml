@@ -7,7 +7,9 @@
         android:title="Home"/>
 
     <item
-        android:title="KOSONG"/>
+        android:id="@+id/search_bottom_nav"
+        android:title="Search"
+        android:icon="@drawable/search"/>
 
     <item
         android:id="@+id/placeholder_bottom_nav"

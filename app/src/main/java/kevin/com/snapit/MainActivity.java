@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import kevin.com.snapit.Fragment.HomeFragment;
 import kevin.com.snapit.Fragment.MapFragment;
 import kevin.com.snapit.Fragment.ProfileFragment;
+import kevin.com.snapit.Fragment.SearchFragment;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setContentView(R.layout.activity_main);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         floatingActionButton = findViewById(R.id.camera_main_btn);
-        top_toolbar = findViewById(R.id.main_toolbar);
+        top_toolbar = findViewById(R.id.home_toolbar);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         floatingActionButton.setOnClickListener(this);
@@ -41,18 +42,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         loadFrame(fragment);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+//        return true;
+//    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.home_bottom_nav:
                 fragment = new HomeFragment();
+                loadFrame(fragment);
+                return true;
+            case R.id.search_bottom_nav:
+                fragment = new SearchFragment();
                 loadFrame(fragment);
                 return true;
             case R.id.map_bottom_nav:
