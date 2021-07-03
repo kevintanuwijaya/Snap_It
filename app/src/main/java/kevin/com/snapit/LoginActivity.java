@@ -30,26 +30,32 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.login_btn) {
-            AccountAuthParams authParams = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().createParams();
-            AccountAuthService service = AccountAuthManager.getService(LoginActivity.this, authParams);
-            startActivityForResult(service.getSignInIntent(), 8888);
+        switch (v.getId()) {
+            case R.id.login_btn:
+                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().createParams();
+                AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
+                startActivityForResult(service1.getSignInIntent(), 2222);
+                break;
         }
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // Process the authorization result to obtain the authorization code from AuthAccount.
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 8888) {
+        if (requestCode == 2222) {
             Task<AuthAccount> authAccountTask = AccountAuthManager.parseAuthResultFromIntent(data);
             if (authAccountTask.isSuccessful()) {
                 // The sign-in is successful, and the user's ID information and authorization code are obtained.
                 AuthAccount authAccount = authAccountTask.getResult();
                 Log.i(TAG, "serverAuthCode:" + authAccount.getAuthorizationCode());
+
+                startActivity(new Intent(this, MainActivity.class));
             } else {
                 // The sign-in failed.
                 Log.e(TAG, "sign in failed:" + ((ApiException) authAccountTask.getException()).getStatusCode());
+                startActivity(new Intent(this, MainActivity.class));
             }
         }
     }

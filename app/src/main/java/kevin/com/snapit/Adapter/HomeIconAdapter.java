@@ -1,6 +1,7 @@
 package kevin.com.snapit.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import kevin.com.snapit.ArticelDetailActivity;
+import kevin.com.snapit.CategoryOnMapActivity;
 import kevin.com.snapit.Model.Icon;
 import kevin.com.snapit.R;
 
@@ -39,7 +42,10 @@ public class HomeIconAdapter extends RecyclerView.Adapter<HomeIconAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Clicked: "+iconList.get(position).getName(),Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context,"Clicked: "+ iconList.get(position).getName(),Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, CategoryOnMapActivity.class);
+                intent.putExtra("CATEGORY", iconList.get(position).getName());
+                context.startActivity(intent);
             }
         });
     }

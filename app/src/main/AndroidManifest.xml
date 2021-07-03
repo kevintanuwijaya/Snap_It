@@ -17,8 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SnapIt">
-        <activity android:name=".ArticelDetailActivity"></activity>
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".CategoryOnMapActivity"></activity>
+        <activity android:name=".ArticelDetailActivity" />
+<!--        <activity android:name=".LoginActivity"></activity>-->
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
