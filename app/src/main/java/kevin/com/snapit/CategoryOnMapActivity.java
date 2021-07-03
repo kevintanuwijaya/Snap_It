@@ -74,12 +74,11 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_on_map);
 
-        //TODO masih salah jadi pake remote location
-//        dynamicPermission();
-//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-//        getCurrentLocation();
+        dynamicPermission();
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        getCurrentLocation();
 
-        searchNearby(getIntent().getStringExtra("CATEGORY"));
+//        searchNearby(getIntent().getStringExtra("CATEGORY"));
 
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
@@ -105,19 +104,20 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         NearbySearchRequest request = new NearbySearchRequest();
         Coordinate location = new Coordinate(currPosition.latitude, currPosition.longitude);
         request.setLocation(location);
-        request.setQuery(" ");
+        request.setQuery("");
         request.setRadius(5000);
         request.setLanguage("en");
         request.setPageIndex(1);
         request.setPageSize(5);
         request.setStrictBounds(false);
         request.setHwPoiType(HwLocationType.RESTAURANT);
+        //TODO masih ke denied request nya
         // Create a search result listener.
         SearchResultListener<NearbySearchResponse> resultListener = new SearchResultListener<NearbySearchResponse>() {
             // Return search results upon a successful search.
             @Override
             public void onSearchResult(NearbySearchResponse results) {
-                Log.d("TAG","Getting your Site");
+                Log.d(TAG,"Getting your Site");
                 if (results == null || results.getTotalCount() <= 0) {
                     return;
                 }
@@ -126,13 +126,13 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                     return;
                 }
                 for (Site site : sites) {
-                    Log.i("TAG", String.format("siteId: '%s', name: %s\r\n", site.getSiteId(), site.getName()));
+                    Log.i(TAG, String.format("siteId: '%s', name: %s\r\n", site.getSiteId(), site.getName()));
                 }
             }
             // Return the result code and description upon a search exception.
             @Override
             public void onSearchError(SearchStatus status) {
-                Log.i("TAG", "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
+                Log.i(TAG, "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
             }
         };
         // Call the nearby place search API.
@@ -159,6 +159,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                     double longitude = locationResult.getLastLocation().getLongitude();
                     // Process the location callback result.
                     currPosition = new LatLng(latitude, longitude);
+                    Log.d(TAG, "onLocationResult: " + currPosition);
                     stopTracking();
                 }
             }
@@ -231,11 +232,11 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         hMap = huaweiMap;
         hMap.setMyLocationEnabled(true);
         hMap.getUiSettings().setMyLocationButtonEnabled(true);
-
     }
 
     private void moveCameraAndAddMarker() {
         LatLng pos = new LatLng(currPosition.latitude, currPosition.longitude);
+        Log.d(TAG, "moveCameraAndAddMarker: " + pos);
 
         for(Site site : sites) {
             Log.d(TAG,"Site Marked");
@@ -247,7 +248,8 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         }
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 9f);
-        hMap.animateCamera(cameraUpdate);
+        hMap.moveCamera(cameraUpdate);
+        searchNearby(getIntent().getStringExtra("CATEGORY"));
     }
 
     private void dynamicPermission(){
@@ -278,10 +280,10 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     }
 
     private String getApi(){
-        String api = "CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz";
+        String API = "CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz";
 
         try {
-            String encodeApi = URLEncoder.encode(api,"utf-8");
+            String encodeApi = URLEncoder.encode(API,"utf-8");
             return encodeApi;
         }catch (Exception e){
             return null;

@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         floatingActionButton.setOnClickListener(this);
-        setSupportActionBar(top_toolbar);
+//        setSupportActionBar(top_toolbar);
 
         fragment = new HomeFragment();
         loadFrame(fragment);

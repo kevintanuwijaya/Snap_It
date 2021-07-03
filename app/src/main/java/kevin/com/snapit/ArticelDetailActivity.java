@@ -35,7 +35,7 @@ public class ArticelDetailActivity extends AppCompatActivity{
         title.setText(currentArticel.getTitle());
         author.setText(currentArticel.getAuthor());
         contain.setText(currentArticel.getContain());
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
 
     }
 
