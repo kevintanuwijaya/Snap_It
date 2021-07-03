@@ -14,6 +14,7 @@ import com.huawei.hms.maps.MapsInitializer;
 import com.huawei.hms.maps.OnMapReadyCallback;
 import com.huawei.hms.maps.SupportMapFragment;
 
+import kevin.com.snapit.MainActivity;
 import kevin.com.snapit.R;
 
 /**
@@ -67,18 +68,18 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         MapsInitializer.setApiKey(String.valueOf(R.string.Api_key));
-
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map,null);
-        view.findViewById(R.id.current_location_btn).setOnClickListener(this);
+        //view.findViewById(R.id.current_location_btn).setOnClickListener(this);
         mMapView = view.findViewById(R.id.mapview_mapviewdemo);
         Bundle mapViewBundle = null;
+        if(savedInstanceState != null){
+            mapViewBundle = savedInstanceState.getBundle("MapViewBundleKey");
+        }
         mMapView.onCreate(mapViewBundle);
         mMapView.getMapAsync(this);
 

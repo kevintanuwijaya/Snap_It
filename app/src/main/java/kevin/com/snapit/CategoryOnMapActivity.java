@@ -8,6 +8,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.EditText;
@@ -44,15 +45,18 @@ import com.huawei.hms.site.api.model.SearchStatus;
 import com.huawei.hms.site.api.model.Site;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import kevin.com.snapit.Model.Articel;
 import kevin.com.snapit.Model.Icon;
+import kevin.com.snapit.Model.Location;
 
 public class CategoryOnMapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = CategoryOnMapActivity.class.getSimpleName();
+    private final int SPLASH_SCREEN = 5000;
 
     private SupportMapFragment mSupportMapFragment;
     private HuaweiMap hMap;
@@ -60,46 +64,60 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
-    private LatLng currPosition;
+    private LatLng currPosition = new LatLng(48.893478,2.334595);
 
     private SearchService searchService;
-    private List<Site> sites;
-
+    private List<Site> sites = new ArrayList<Site>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_on_map);
 
-        dynamicPermission();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getCurrentLocation();
+        //TODO masih salah jadi pake remote location
+//        dynamicPermission();
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//        getCurrentLocation();
 
-        searchNearby(getIntent().getParcelableExtra("CATEGORY"));
+        searchNearby(getIntent().getStringExtra("CATEGORY"));
 
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                moveCameraAndAddMarker();
+            }
+        },SPLASH_SCREEN);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     private void searchNearby(String query) {
         // Instantiate the SearchService object.
-        searchService = SearchServiceFactory.create(this, "API key");
+        searchService = SearchServiceFactory.create(this, getApi());
         // Create a request body.
         NearbySearchRequest request = new NearbySearchRequest();
         Coordinate location = new Coordinate(currPosition.latitude, currPosition.longitude);
         request.setLocation(location);
-        request.setQuery(query);
-        request.setRadius(1000);
-        request.setHwPoiType(HwLocationType.ADDRESS);
+        request.setQuery(" ");
+        request.setRadius(5000);
         request.setLanguage("en");
         request.setPageIndex(1);
         request.setPageSize(5);
         request.setStrictBounds(false);
+        request.setHwPoiType(HwLocationType.RESTAURANT);
         // Create a search result listener.
         SearchResultListener<NearbySearchResponse> resultListener = new SearchResultListener<NearbySearchResponse>() {
             // Return search results upon a successful search.
             @Override
             public void onSearchResult(NearbySearchResponse results) {
+                Log.d("TAG","Getting your Site");
                 if (results == null || results.getTotalCount() <= 0) {
                     return;
                 }
@@ -159,7 +177,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        // ...
+                                        Log.d(TAG,"Getting your location");
                                     }
                                 });
                     }
@@ -183,6 +201,9 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                         }
                     }
                 });
+
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void stopTracking() {
@@ -210,13 +231,14 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         hMap = huaweiMap;
         hMap.setMyLocationEnabled(true);
         hMap.getUiSettings().setMyLocationButtonEnabled(true);
-        moveCameraAndAddMarker();
+
     }
 
     private void moveCameraAndAddMarker() {
         LatLng pos = new LatLng(currPosition.latitude, currPosition.longitude);
 
         for(Site site : sites) {
+            Log.d(TAG,"Site Marked");
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(site.getLocation().getLat(), site.getLocation().getLng()))
                     .title(site.getName())
@@ -228,7 +250,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         hMap.animateCamera(cameraUpdate);
     }
 
-    private void dynamicPermission() {
+    private void dynamicPermission(){
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             Log.i(TAG, "android sdk <= 28 Q");
             if (ActivityCompat.checkSelfPermission(this,
@@ -252,6 +274,17 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                         "android.permission.ACCESS_BACKGROUND_LOCATION"};
                 ActivityCompat.requestPermissions(this, strings, 2);
             }
+        }
+    }
+
+    private String getApi(){
+        String api = "CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz";
+
+        try {
+            String encodeApi = URLEncoder.encode(api,"utf-8");
+            return encodeApi;
+        }catch (Exception e){
+            return null;
         }
     }
 }
