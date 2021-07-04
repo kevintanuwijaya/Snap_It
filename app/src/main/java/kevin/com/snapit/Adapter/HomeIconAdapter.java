@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +41,7 @@ public class HomeIconAdapter extends RecyclerView.Adapter<HomeIconAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.icon.setImageResource(iconList.get(position).getImage());
+        holder.text.setText(iconList.get(position).getName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,10 +61,12 @@ public class HomeIconAdapter extends RecyclerView.Adapter<HomeIconAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView icon;
+        private TextView text;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             icon = itemView.findViewById(R.id.icon_image);
+            text = itemView.findViewById(R.id.home_icon_text);
         }
     }
 }

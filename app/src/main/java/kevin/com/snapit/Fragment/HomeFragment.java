@@ -10,7 +10,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.huawei.hms.ads.AdListener;
+import com.huawei.hms.ads.AdParam;
+import com.huawei.hms.ads.HwAds;
+import com.huawei.hms.ads.VideoOperator;
+import com.huawei.hms.ads.nativead.DislikeAdListener;
+import com.huawei.hms.ads.nativead.MediaView;
+import com.huawei.hms.ads.nativead.NativeAd;
+import com.huawei.hms.ads.nativead.NativeAdConfiguration;
+import com.huawei.hms.ads.nativead.NativeAdLoader;
+import com.huawei.hms.ads.nativead.NativeView;
 
 import java.util.ArrayList;
 
@@ -39,6 +55,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView recycler_site,recycler_articel;
     private ArrayList<Icon> iconList = new ArrayList<Icon>();
     private ArrayList<Articel> articelList = new ArrayList<Articel>();
+
+    private NativeAd globalNativeAd;
+    private ScrollView scrollView;
+
 
 
 
@@ -71,7 +91,10 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        HwAds.init(getActivity());
+        //loadAd(String.valueOf(R.string.ad_id_native));
         init();
+        Log.d("HOME","SINI");
 
     }
 
@@ -81,6 +104,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home,null);
         recycler_site = view.findViewById(R.id.recycle_site);
         recycler_articel = view.findViewById(R.id.recycle_articel);
+        scrollView = view.findViewById(R.id.scroll_layout);
 
         return view;
     }
@@ -107,6 +131,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
     }
 
     private void init(){
@@ -130,4 +155,84 @@ public class HomeFragment extends Fragment {
             articelList.add(articel);
         }
     }
+
+    private void loadAd(String adId) {
+        Log.d("HOME","Load ads");
+        NativeAdLoader.Builder builder = new NativeAdLoader.Builder(getContext(), adId);
+
+        builder.setNativeAdLoadedListener(new NativeAd.NativeAdLoadedListener() {
+            @Override
+            public void onNativeAdLoaded(NativeAd nativeAd) {
+                Log.d("HOME","Loading ads");
+                // Display a native ad.
+                showNativeAd(nativeAd);
+
+                nativeAd.setDislikeAdListener(new DislikeAdListener() {
+                    @Override
+                    public void onAdDisliked() {
+                        // Called when an ad is closed.
+                        globalNativeAd.destroy();
+                    }
+                });
+            }
+        }).setAdListener(new AdListener() {
+            @Override
+            public void onAdFailed(int errorCode) {
+                Log.d("HOME","Error: "+errorCode);
+            }
+        });
+
+        NativeAdConfiguration adConfiguration = new NativeAdConfiguration.Builder()
+                // Set custom attributes.
+                .setChoicesPosition(NativeAdConfiguration.ChoicesPosition.BOTTOM_RIGHT)
+                .build();
+
+        NativeAdLoader nativeAdLoader = builder.setNativeAdOptions(adConfiguration).build();
+
+        nativeAdLoader.loadAd(new AdParam.Builder().build());
+    }
+
+    private void showNativeAd(NativeAd nativeAd) {
+        // Destroy the original native ad.
+        if (null != globalNativeAd) {
+            globalNativeAd.destroy();
+        }
+        globalNativeAd = nativeAd;
+
+        // Create NativeView.
+        NativeView nativeView = (NativeView) getLayoutInflater().inflate(R.layout.native_video_template, null);
+        Log.d("HOME","Showing add");
+        // Populate NativeView.
+        initNativeAdView(globalNativeAd, nativeView);
+
+        // Add NativeView to the app UI.
+        scrollView.addView(nativeView);
+    }
+
+    private void initNativeAdView(NativeAd nativeAd, NativeView nativeView) {
+        // Register a native ad asset view.
+        nativeView.setTitleView(nativeView.findViewById(R.id.ad_title));
+        nativeView.setMediaView((MediaView) nativeView.findViewById(R.id.ad_media));
+        nativeView.setAdSourceView(nativeView.findViewById(R.id.ad_source));
+        nativeView.setCallToActionView(nativeView.findViewById(R.id.ad_call_to_action));
+
+        // Populate the native ad asset view. The native ad must contain the title and media assets.
+        ((TextView) nativeView.getTitleView()).setText(nativeAd.getTitle());
+        nativeView.getMediaView().setMediaContent(nativeAd.getMediaContent());
+
+        if (null != nativeAd.getAdSource()) {
+            ((TextView) nativeView.getAdSourceView()).setText(nativeAd.getAdSource());
+        }
+        nativeView.getAdSourceView().setVisibility(null != nativeAd.getAdSource() ? View.VISIBLE : View.INVISIBLE);
+
+        if (null != nativeAd.getCallToAction()) {
+            ((Button) nativeView.getCallToActionView()).setText(nativeAd.getCallToAction());
+        }
+        nativeView.getCallToActionView().setVisibility(null != nativeAd.getCallToAction() ? View.VISIBLE : View.INVISIBLE);
+
+
+        // Register a native ad object.
+        nativeView.setNativeAd(nativeAd);
+    }
+
 }

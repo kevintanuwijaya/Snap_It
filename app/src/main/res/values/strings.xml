@@ -3,6 +3,10 @@
     <string name="Api_key">CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="ad_id_native">testu7m3hc4gvm</string>
+    <string name="ad_id_native_small">testb65czjivt9</string>
+    <string name="ad_id_native_video">testy63txaom86</string>
+    <string name="ad_flag">Ad</string>
 
     <string-array name="setting_array">
         <item>Privacy Policy</item>
@@ -10,15 +14,15 @@
     </string-array>
 
     <string-array name="icon">
-        <item>restaurant</item>
-        <item>petrol station</item>
+        <item>Restaurant</item>
+        <item>Petrol Station</item>
         <item>Shop</item>
-        <item>museum</item>
-        <item>hotel</item>
-        <item>hospital</item>
-        <item>cinema</item>
-        <item>bank</item>
-        <item>amusementpark</item>
+        <item>Museum</item>
+        <item>Hotel</item>
+        <item>Hospital</item>
+        <item>Cinema</item>
+        <item>Bank</item>
+        <item>Amusement Park</item>
     </string-array>
 
     <string-array name="articelTitle">
