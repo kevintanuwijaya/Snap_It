@@ -11,16 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.huawei.hms.ads.AdListener;
 import com.huawei.hms.ads.AdParam;
+import com.huawei.hms.ads.BannerAdSize;
 import com.huawei.hms.ads.HwAds;
 import com.huawei.hms.ads.VideoOperator;
+import com.huawei.hms.ads.banner.BannerView;
 import com.huawei.hms.ads.nativead.DislikeAdListener;
 import com.huawei.hms.ads.nativead.MediaView;
 import com.huawei.hms.ads.nativead.NativeAd;
@@ -47,6 +51,7 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -58,6 +63,8 @@ public class HomeFragment extends Fragment {
 
     private NativeAd globalNativeAd;
     private ScrollView scrollView;
+    private FrameLayout adLayout;
+
 
 
 
@@ -91,10 +98,11 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
         HwAds.init(getActivity());
-        //loadAd(String.valueOf(R.string.ad_id_native));
+        loadAd(getString(R.string.ad_id_native_small));
         init();
-        Log.d("HOME","SINI");
+
 
     }
 
@@ -105,6 +113,7 @@ public class HomeFragment extends Fragment {
         recycler_site = view.findViewById(R.id.recycle_site);
         recycler_articel = view.findViewById(R.id.recycle_articel);
         scrollView = view.findViewById(R.id.scroll_layout);
+        adLayout = view.findViewById(R.id.ad_frame_layout);
 
         return view;
     }
@@ -157,37 +166,33 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadAd(String adId) {
-        Log.d("HOME","Load ads");
+        Log.d(TAG, adId);
+
         NativeAdLoader.Builder builder = new NativeAdLoader.Builder(getContext(), adId);
 
-        builder.setNativeAdLoadedListener(new NativeAd.NativeAdLoadedListener() {
-            @Override
-            public void onNativeAdLoaded(NativeAd nativeAd) {
-                Log.d("HOME","Loading ads");
-                // Display a native ad.
-                showNativeAd(nativeAd);
+        builder.setNativeAdLoadedListener(nativeAd -> {
+            Log.d(TAG,"Ads Loaded");
+            // Display a native ad.
+            showNativeAd(nativeAd);
 
-                nativeAd.setDislikeAdListener(new DislikeAdListener() {
-                    @Override
-                    public void onAdDisliked() {
-                        // Called when an ad is closed.
-                        globalNativeAd.destroy();
-                    }
-                });
-            }
+            nativeAd.setDislikeAdListener(() -> {
+                // Called when an ad is closed.
+                globalNativeAd.destroy();
+            });
         }).setAdListener(new AdListener() {
             @Override
             public void onAdFailed(int errorCode) {
-                Log.d("HOME","Error: "+errorCode);
+                Log.d(TAG,"Error: "+ errorCode);
             }
         });
 
-        NativeAdConfiguration adConfiguration = new NativeAdConfiguration.Builder()
-                // Set custom attributes.
-                .setChoicesPosition(NativeAdConfiguration.ChoicesPosition.BOTTOM_RIGHT)
-                .build();
+//        NativeAdConfiguration adConfiguration = new NativeAdConfiguration.Builder()
+//                // Set custom attributes.
+//                .setChoicesPosition(NativeAdConfiguration.ChoicesPosition.BOTTOM_RIGHT)
+//                .build();
 
-        NativeAdLoader nativeAdLoader = builder.setNativeAdOptions(adConfiguration).build();
+//        NativeAdLoader nativeAdLoader = builder.setNativeAdOptions(adConfiguration).build();
+        NativeAdLoader nativeAdLoader = builder.build();
 
         nativeAdLoader.loadAd(new AdParam.Builder().build());
     }
@@ -200,13 +205,13 @@ public class HomeFragment extends Fragment {
         globalNativeAd = nativeAd;
 
         // Create NativeView.
-        NativeView nativeView = (NativeView) getLayoutInflater().inflate(R.layout.native_video_template, null);
-        Log.d("HOME","Showing add");
+        NativeView nativeView = (NativeView) getLayoutInflater().inflate(R.layout.native_small_template, null);
+        Log.d(TAG,"Showing add");
         // Populate NativeView.
         initNativeAdView(globalNativeAd, nativeView);
 
         // Add NativeView to the app UI.
-        scrollView.addView(nativeView);
+        adLayout.addView(nativeView);
     }
 
     private void initNativeAdView(NativeAd nativeAd, NativeView nativeView) {

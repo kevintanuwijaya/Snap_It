@@ -30,8 +30,8 @@
             android:id="@+id/scroll_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/main_appbar">
-
+            android:layout_below="@+id/main_appbar"
+            android:layout_marginTop="11dp">
 
             <LinearLayout
                 android:layout_marginTop="10dp"
@@ -41,14 +41,10 @@
                 android:background="@drawable/rounded_item"
                 android:orientation="vertical">
 
-                <com.huawei.hms.ads.banner.BannerView
-                    android:id="@+id/hw_banner_view"
+                <FrameLayout
+                    android:id="@+id/ad_frame_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    hwads:adId="testw6vs28auh3"
-                    hwads:bannerSize="BANNER_SIZE_360_57"/>
+                    android:layout_height="wrap_content" />
 
                 <TextView
                     android:id="@+id/home_text1"
@@ -89,7 +85,8 @@
                     android:layout_height="wrap_content"/>
 
             </LinearLayout>
-        </ScrollView>
+    </ScrollView>
+
     </RelativeLayout>
 
 
