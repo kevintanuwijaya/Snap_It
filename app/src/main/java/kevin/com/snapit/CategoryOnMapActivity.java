@@ -64,10 +64,12 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
-    private LatLng currPosition = new LatLng(48.893478,2.334595);
+    private LatLng currPosition;
 
     private SearchService searchService;
     private List<Site> sites = new ArrayList<Site>();
+    private boolean locationFound = false;
+    private boolean siteFound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,17 +80,22 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getCurrentLocation();
 
-//        searchNearby(getIntent().getStringExtra("CATEGORY"));
+        while (!locationFound){
 
+        }
+
+        searchNearby(getIntent().getStringExtra("CATEGORY"));
+
+        while (!siteFound){
+
+        }
+
+        //TODO map still not shown
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                moveCameraAndAddMarker();
-            }
-        },SPLASH_SCREEN);
+        moveCameraAndAddMarker();
+
     }
 
     @Override
@@ -111,12 +118,11 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         request.setPageSize(5);
         request.setStrictBounds(false);
         request.setHwPoiType(HwLocationType.RESTAURANT);
-        //TODO masih ke denied request nya
-        // Create a search result listener.
         SearchResultListener<NearbySearchResponse> resultListener = new SearchResultListener<NearbySearchResponse>() {
             // Return search results upon a successful search.
             @Override
             public void onSearchResult(NearbySearchResponse results) {
+                siteFound = true;
                 Log.d(TAG,"Getting your Site");
                 if (results == null || results.getTotalCount() <= 0) {
                     return;
@@ -155,6 +161,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
+                    locationFound = true;
                     double latitude = locationResult.getLastLocation().getLatitude();
                     double longitude = locationResult.getLastLocation().getLongitude();
                     // Process the location callback result.
@@ -249,7 +256,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 9f);
         hMap.moveCamera(cameraUpdate);
-        searchNearby(getIntent().getStringExtra("CATEGORY"));
+//        searchNearby(getIntent().getStringExtra("CATEGORY"));
     }
 
     private void dynamicPermission(){
