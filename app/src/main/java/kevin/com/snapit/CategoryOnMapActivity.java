@@ -1,9 +1,13 @@
 package kevin.com.snapit;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -11,7 +15,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
@@ -53,9 +62,10 @@ import kevin.com.snapit.Model.Articel;
 import kevin.com.snapit.Model.Icon;
 import kevin.com.snapit.Model.Location;
 
-public class CategoryOnMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class CategoryOnMapActivity extends AppCompatActivity implements OnMapReadyCallback, HuaweiMap.OnMarkerClickListener {
 
     private static final String TAG = CategoryOnMapActivity.class.getSimpleName();
+    final LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     private final int SPLASH_SCREEN = 5000;
 
     private SupportMapFragment mSupportMapFragment;
@@ -68,8 +78,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
 
     private SearchService searchService;
     private List<Site> sites = new ArrayList<Site>();
-    private boolean locationFound = false;
-    private boolean siteFound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,28 +88,29 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getCurrentLocation();
 
-        while (!locationFound){
-
-        }
-
-        searchNearby(getIntent().getStringExtra("CATEGORY"));
-
-        while (!siteFound){
-
-        }
 
         //TODO map still not shown
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
 
-        moveCameraAndAddMarker();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                searchNearby(getIntent().getStringExtra("CATEGORY"));
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        moveCameraAndAddMarker();
+                    }
+                },1000);
+            }
+        },1000);
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     private void searchNearby(String query) {
@@ -109,20 +118,20 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         searchService = SearchServiceFactory.create(this, getApi());
         // Create a request body.
         NearbySearchRequest request = new NearbySearchRequest();
+//        Coordinate location = new Coordinate(48.893478, 2.334595);
         Coordinate location = new Coordinate(currPosition.latitude, currPosition.longitude);
         request.setLocation(location);
-        request.setQuery("");
-        request.setRadius(5000);
+        request.setQuery(query);
+        request.setRadius(20000);
         request.setLanguage("en");
         request.setPageIndex(1);
-        request.setPageSize(5);
+        request.setPageSize(10); // Buat nentuin berapa banyak result
         request.setStrictBounds(false);
         request.setHwPoiType(HwLocationType.RESTAURANT);
         SearchResultListener<NearbySearchResponse> resultListener = new SearchResultListener<NearbySearchResponse>() {
             // Return search results upon a successful search.
             @Override
             public void onSearchResult(NearbySearchResponse results) {
-                siteFound = true;
                 Log.d(TAG,"Getting your Site");
                 if (results == null || results.getTotalCount() <= 0) {
                     return;
@@ -132,13 +141,13 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                     return;
                 }
                 for (Site site : sites) {
-                    Log.i(TAG, String.format("siteId: '%s', name: %s\r\n", site.getSiteId(), site.getName()));
+                    Log.d(TAG, String.format("siteId: '%s', name: %s\r\n", site.getSiteId(), site.getName()));
                 }
             }
             // Return the result code and description upon a search exception.
             @Override
             public void onSearchError(SearchStatus status) {
-                Log.i(TAG, "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
+                Log.d(TAG, "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
             }
         };
         // Call the nearby place search API.
@@ -161,7 +170,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
-                    locationFound = true;
                     double latitude = locationResult.getLastLocation().getLatitude();
                     double longitude = locationResult.getLastLocation().getLongitude();
                     // Process the location callback result.
@@ -209,9 +217,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                         }
                     }
                 });
-
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void stopTracking() {
@@ -249,17 +254,17 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
             Log.d(TAG,"Site Marked");
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(site.getLocation().getLat(), site.getLocation().getLng()))
-                    .title(site.getName())
-                    .snippet(site.getFormatAddress() + " " + site.getDistance() + " away from your locaton");
+                    .title(site.getName());
             mMarker =  hMap.addMarker(options);
         }
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 9f);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 17f);
         hMap.moveCamera(cameraUpdate);
-//        searchNearby(getIntent().getStringExtra("CATEGORY"));
+        hMap.setOnMarkerClickListener(this);
     }
 
     private void dynamicPermission(){
+        // Dynamically apply for required permissions if the API level is 28 or smaller.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             Log.i(TAG, "android sdk <= 28 Q");
             if (ActivityCompat.checkSelfPermission(this,
@@ -290,10 +295,22 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         String API = "CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz";
 
         try {
-            String encodeApi = URLEncoder.encode(API,"utf-8");
-            return encodeApi;
+            return URLEncoder.encode(API,"utf-8");
         }catch (Exception e){
             return null;
         }
+    }
+    //TODO masih error buat inflate pas marker di click
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.d(TAG, "onMarkerClick: IN");
+        @SuppressLint("ResourceType") LinearLayout floating_site_detail = findViewById(R.layout.floating_site_detail);
+        inflater.inflate(floating_site_detail, R.id.marker_detail_layout);
+        return false;
+    }
+
+    private void initInflater(FrameLayout view, Marker marker) {
+        TextView title = view.findViewById(R.id.textView);
+        title.setText(marker.getTitle());
     }
 }
