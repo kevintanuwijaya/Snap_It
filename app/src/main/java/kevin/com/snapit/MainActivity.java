@@ -38,8 +38,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         floatingActionButton.setOnClickListener(this);
 //        setSupportActionBar(top_toolbar);
 
-        fragment = new HomeFragment();
-        loadFrame(fragment);
+
+        String startFramgent = getIntent().getStringExtra("FRAGMENT");
+
+        if(startFramgent==null){
+            startFramgent = "Home";
+        }
+
+        if(startFramgent.equals("Profile")){
+            fragment = new ProfileFragment();
+            loadFrame(fragment);
+        }else{
+            fragment = new HomeFragment();
+            loadFrame(fragment);
+        }
     }
 
 //    @Override

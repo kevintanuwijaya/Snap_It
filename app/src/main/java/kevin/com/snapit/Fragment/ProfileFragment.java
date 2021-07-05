@@ -1,26 +1,31 @@
 package kevin.com.snapit.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import kevin.com.snapit.Adapter.SettingAdapter;
+import java.util.ArrayList;
+
+import kevin.com.snapit.Adapter.SettingsAdapter;
+import kevin.com.snapit.Model.Settings;
 import kevin.com.snapit.R;
+import kevin.com.snapit.SettingActivity;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,10 +37,7 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemClick
     private String mParam2;
 
     private TextView nameLbl, emailLbl;
-    private ListView listSetting;
-
-    private String[] setting_items;
-    private int[] icons = {R.drawable.privacy,R.drawable.logout};
+    private Toolbar toolbar;
 
 
     public ProfileFragment() {
@@ -67,7 +69,6 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemClick
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        setting_items = getResources().getStringArray(R.array.setting_array);
     }
 
     @Override
@@ -76,30 +77,25 @@ public class ProfileFragment extends Fragment implements AdapterView.OnItemClick
             View view = inflater.inflate(R.layout.fragment_profile,null);
             nameLbl = view.findViewById(R.id.profile_name);
             emailLbl = view.findViewById(R.id.profile_email);
-            listSetting = view.findViewById(R.id.list_setting);
+            toolbar = view.findViewById(R.id.profile_toolbar);
             return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        SettingAdapter settingAdapter = new SettingAdapter(getContext(),R.layout.setting_adapterr,setting_items,icons);
-        listSetting.setAdapter(settingAdapter);
-        listSetting.setOnItemClickListener(this);
+        toolbar.setOnMenuItemClickListener(this);
 
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        int len = icons.length;
-        switch (position){
-            case 0:
-                //privacy policy
-                break;
-            case 1:
-                //logout
-                break;
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.settings_btn:
+                Intent intent = new Intent(getActivity(), SettingActivity.class);
+                startActivity(intent);
+                return true;
         }
+        return false;
     }
 }
