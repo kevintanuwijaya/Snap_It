@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +14,14 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.huawei.hmf.tasks.OnFailureListener;
+import com.huawei.hmf.tasks.OnSuccessListener;
+import com.huawei.hmf.tasks.Task;
+import com.huawei.hms.support.account.AccountAuthManager;
+import com.huawei.hms.support.account.request.AccountAuthParams;
+import com.huawei.hms.support.account.request.AccountAuthParamsHelper;
+import com.huawei.hms.support.account.result.AuthAccount;
+import com.huawei.hms.support.account.service.AccountAuthService;
 
 import kevin.com.snapit.Fragment.HomeFragment;
 import kevin.com.snapit.Fragment.MapFragment;
@@ -25,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton floatingActionButton;
     private Toolbar top_toolbar;
+    public static AuthAccount authAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,5 +108,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragmentTransaction.replace(R.id.main_frame,fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    private void silentSignIn(){
+        AccountAuthParams accountAuthParams = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().createParams();
+        AccountAuthService accountAuthService = AccountAuthManager.getService(MainActivity.this,accountAuthParams);
+
+        Task<AuthAccount> silentSignin = accountAuthService.silentSignIn();
+        silentSignin.addOnSuccessListener(new OnSuccessListener<AuthAccount>() {
+            @Override
+            public void onSuccess(AuthAccount authAccount) {
+//                MainActivity.authAccount = authAccount.getAccount(this);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                Intent failIntent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(failIntent);
+            }
+        });
+
+
     }
 }

@@ -11,11 +11,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.huawei.hms.support.account.result.AuthAccount;
 
 import java.util.ArrayList;
 
 import kevin.com.snapit.Adapter.SettingsAdapter;
+import kevin.com.snapit.MainActivity;
 import kevin.com.snapit.Model.Settings;
 import kevin.com.snapit.R;
 import kevin.com.snapit.SettingActivity;
@@ -36,8 +40,11 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
     private String mParam1;
     private String mParam2;
 
-    private TextView nameLbl, emailLbl;
+    private TextView nameLbl;
+    private ImageView profilePic;
     private Toolbar toolbar;
+
+//    private AuthAccount authAccount = MainActivity.authAccount;
 
 
     public ProfileFragment() {
@@ -76,8 +83,11 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
                              Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_profile,null);
             nameLbl = view.findViewById(R.id.profile_name);
-            emailLbl = view.findViewById(R.id.profile_email);
             toolbar = view.findViewById(R.id.profile_toolbar);
+            profilePic = view.findViewById(R.id.profile_image);
+//            nameLbl.setText(authAccount.getDisplayName()+" "+authAccount.getFamilyName());
+//            profilePic.setImageURI(authAccount.getAvatarUri());
+
             return view;
     }
 

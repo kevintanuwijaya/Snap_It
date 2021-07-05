@@ -38,6 +38,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"/>
 
+        <LinearLayout
+            android:id="@+id/logout_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:layout_margin="20px"
+            android:layout_below="@+id/setting_recycle"
+            android:background="@drawable/logout_btn"
+            android:padding="20px">
+
+            <ImageView
+                android:id="@+id/logout_icon"
+                android:layout_width="150px"
+                android:layout_height="150px"
+                android:src="@drawable/logout"
+                android:padding="20px"/>
+
+            <TextView
+                android:id="@+id/logout_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textSize="8pt"
+                android:text="Logout"/>
+        </LinearLayout>
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

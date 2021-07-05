@@ -10,7 +10,6 @@
 
     <string-array name="setting_array">
         <item>Privacy Policy</item>
-        <item>Logout</item>
     </string-array>
 
     <string-array name="icon">
