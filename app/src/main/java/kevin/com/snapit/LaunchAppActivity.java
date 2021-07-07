@@ -29,6 +29,7 @@ public class LaunchAppActivity extends AppCompatActivity {
     private AccountAuthParams accountAuthParams;
     private AccountAuthService accountAuthService;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +55,6 @@ public class LaunchAppActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         name.setVisibility(View.VISIBLE);
-
                         Task<AuthAccount> silentSignin = accountAuthService.silentSignIn();
                         silentSignin.addOnSuccessListener(new OnSuccessListener<AuthAccount>() {
                             @Override
@@ -73,6 +73,5 @@ public class LaunchAppActivity extends AppCompatActivity {
                 },2000);
             }
         },4000);
-
     }
 }

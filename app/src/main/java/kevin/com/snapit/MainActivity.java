@@ -35,6 +35,8 @@ import com.huawei.hms.support.account.request.AccountAuthParams;
 import com.huawei.hms.support.account.request.AccountAuthParamsHelper;
 import com.huawei.hms.support.account.result.AuthAccount;
 import com.huawei.hms.support.account.service.AccountAuthService;
+import com.huawei.hms.support.hwid.request.HuaweiIdAuthParams;
+import com.huawei.hms.support.hwid.request.HuaweiIdAuthParamsHelper;
 
 import kevin.com.snapit.Fragment.HomeFragment;
 import kevin.com.snapit.Fragment.MapFragment;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private final int CAMERA_REQUEST_TOKEN = 1000;
     private final int PERMISSION_CODE = 1001;
+    private final int EMAIL_REQUEST_CODE = 1002;
 
     private Fragment fragment;
     private BottomNavigationView bottomNavigationView;
@@ -53,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public static AuthAccount authAccount;
 
     private Uri image_uri;
+
+    private AuthAccount authAccount1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             loadFrame(fragment);
         }
         silentSignIn();
+
     }
 
 //    @Override
@@ -169,6 +175,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             captureIntent.putExtra(MediaStore.EXTRA_OUTPUT,image_uri.toString());
             startActivity(captureIntent);
         }
+//        if(requestCode == EMAIL_REQUEST_CODE){
+//            Task<AuthAccount> task = AccountAuthManager.parseAuthResultFromIntent(data);
+//            if(task.isSuccessful()){
+//                authAccount1 = task.getResult();
+//                Log.d("Account",""+authAccount1.getEmail());
+//            }
+//        }
 
     }
 
@@ -179,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fragmentTransaction.commit();
     }
 
+
     private void silentSignIn(){
         AccountAuthParams accountAuthParams = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().createParams();
         AccountAuthService accountAuthService = AccountAuthManager.getService(MainActivity.this,accountAuthParams);
@@ -188,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onSuccess(AuthAccount authAccount) {
                 MainActivity.authAccount = authAccount;
+                Log.d("Account",""+authAccount.getEmail());
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
