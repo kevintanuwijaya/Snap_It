@@ -1,13 +1,10 @@
 package kevin.com.snapit;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,11 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.huawei.hmf.tasks.OnFailureListener;
@@ -55,17 +54,12 @@ import com.huawei.hms.site.api.model.Site;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import kevin.com.snapit.Model.Articel;
-import kevin.com.snapit.Model.Icon;
-import kevin.com.snapit.Model.Location;
 
 public class CategoryOnMapActivity extends AppCompatActivity implements OnMapReadyCallback, HuaweiMap.OnMarkerClickListener {
 
     private static final String TAG = CategoryOnMapActivity.class.getSimpleName();
-    final LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     private final int SPLASH_SCREEN = 5000;
 
     private SupportMapFragment mSupportMapFragment;
@@ -79,19 +73,22 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     private SearchService searchService;
     private List<Site> sites = new ArrayList<Site>();
 
+    private PopupWindow popupWindow;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_on_map);
 
+        Log.d(TAG, "onCreate: SUCCESS");
         dynamicPermission();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getCurrentLocation();
 
-
-        //TODO map still not shown
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
+
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -102,9 +99,10 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                     public void run() {
                         moveCameraAndAddMarker();
                     }
-                },1000);
+                }, 3000);
             }
-        },1000);
+        }, 1000);
+
 
     }
 
@@ -118,38 +116,42 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         searchService = SearchServiceFactory.create(this, getApi());
         // Create a request body.
         NearbySearchRequest request = new NearbySearchRequest();
-//        Coordinate location = new Coordinate(48.893478, 2.334595);
         Coordinate location = new Coordinate(currPosition.latitude, currPosition.longitude);
+        Log.d(TAG, "searchNearby: " + location.getLat() + " " + location.getLng());
+        Log.d(TAG, "searchNearby: " + query);
+        Log.d(TAG, "searchNearby: " + getPoiType(query));
         request.setLocation(location);
         request.setQuery(query);
-        request.setRadius(20000);
+        request.setRadius(10);
+        request.setHwPoiType(getPoiType(query));
         request.setLanguage("en");
         request.setPageIndex(1);
         request.setPageSize(10); // Buat nentuin berapa banyak result
         request.setStrictBounds(false);
-        request.setHwPoiType(HwLocationType.RESTAURANT);
         SearchResultListener<NearbySearchResponse> resultListener = new SearchResultListener<NearbySearchResponse>() {
             // Return search results upon a successful search.
             @Override
             public void onSearchResult(NearbySearchResponse results) {
-                Log.d(TAG,"Getting your Site");
+                Log.d(TAG, "Getting your Site");
                 if (results == null || results.getTotalCount() <= 0) {
                     return;
                 }
                 sites = results.getSites();
-                if(sites == null || sites.size() == 0){
+                if (sites == null || sites.size() == 0) {
                     return;
                 }
                 for (Site site : sites) {
                     Log.d(TAG, String.format("siteId: '%s', name: %s\r\n", site.getSiteId(), site.getName()));
                 }
             }
+
             // Return the result code and description upon a search exception.
             @Override
             public void onSearchError(SearchStatus status) {
                 Log.d(TAG, "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
             }
         };
+
         // Call the nearby place search API.
         searchService.nearbySearch(request, resultListener);
     }
@@ -179,7 +181,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                 }
             }
         };
-
         // Check the device location settings.
         settingsClient.checkLocationSettings(locationSettingsRequest)
                 // Define callback for success in checking the device location settings.
@@ -193,7 +194,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d(TAG,"Getting your location");
+                                        Log.d(TAG, "Getting your location");
                                     }
                                 });
                     }
@@ -250,20 +251,56 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         LatLng pos = new LatLng(currPosition.latitude, currPosition.longitude);
         Log.d(TAG, "moveCameraAndAddMarker: " + pos);
 
-        for(Site site : sites) {
-            Log.d(TAG,"Site Marked");
+        for (Site site : sites) {
+            Log.d(TAG, "Site Marked " + " " + site.getName());
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(site.getLocation().getLat(), site.getLocation().getLng()))
                     .title(site.getName());
-            mMarker =  hMap.addMarker(options);
+            mMarker = hMap.addMarker(options);
         }
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 17f);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, 14f);
         hMap.moveCamera(cameraUpdate);
         hMap.setOnMarkerClickListener(this);
     }
 
-    private void dynamicPermission(){
+    private HwLocationType getPoiType(String key) {
+        HwLocationType type = HwLocationType.ADDRESS;
+
+        switch (key) {
+            case "Restaurant":
+                type = HwLocationType.RESTAURANT;
+                break;
+            case "Petrol Station":
+                type = HwLocationType.PETROL_STATION;
+                break;
+            case "Shop":
+                type = HwLocationType.SHOP;
+                break;
+            case "Museum":
+                type = HwLocationType.MUSEUM;
+                break;
+            case "Hotel":
+                type = HwLocationType.HOTEL;
+                break;
+            case "Hospital":
+                type = HwLocationType.GENERAL_HOSPITAL;
+                break;
+            case "Cinema":
+                type = HwLocationType.CINEMA;
+                break;
+            case "Bank":
+                type = HwLocationType.BANK;
+                break;
+            case "Amusement Park":
+                type = HwLocationType.AMUSEMENT_PARK;
+                break;
+        }
+
+        return type;
+    }
+
+    private void dynamicPermission() {
         // Dynamically apply for required permissions if the API level is 28 or smaller.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             Log.i(TAG, "android sdk <= 28 Q");
@@ -291,26 +328,50 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         }
     }
 
-    private String getApi(){
+    private String getApi() {
         String API = "CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz";
 
         try {
-            return URLEncoder.encode(API,"utf-8");
-        }catch (Exception e){
+            return URLEncoder.encode(API, "utf-8");
+        } catch (Exception e) {
             return null;
         }
     }
-    //TODO masih error buat inflate pas marker di click
+
+
+    //TODO Benerin detail Linear Layout nya
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "onMarkerClick: IN");
-//        @SuppressLint("ResourceType") LinearLayout floating_site_detail = findViewById(R.layout.floating_site_detail);
-//        inflater.inflate(floating_site_detail, R.id.marker_detail_layout);
-        return false;
-    }
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View detailView = null;
 
-    private void initInflater(FrameLayout view, Marker marker) {
-        TextView title = view.findViewById(R.id.textView);
-        title.setText(marker.getTitle());
+        TextView textView = (TextView) findViewById(R.id.detail_title);
+
+//        popupWindow = new PopupWindow(this);
+
+
+//        LinearLayout detailLayout = findViewById(R.id.detail_layout);
+//        try {
+//            detailView = getLayoutInflater().inflate(R.layout.floating_site_detail, detailLayout, false);
+//        } catch (Exception e) {
+//            Log.d(TAG, "onMarkerClick: CATCH GAGAL");
+//        }
+        textView.setText(marker.getTitle());
+
+//        detailLayout.addView(detailView);
+
+
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+//                LinearLayout.LayoutParams.WRAP_CONTENT);
+//        layout.setOrientation(LinearLayout.VERTICAL);
+//        textView.setText(marker.getTitle());
+//        imageView.setImageResource(R.drawable.restaurant);
+//        layout.addView(textView, params);
+//        layout.addView(imageView, params);
+//        popupWindow.setContentView(layout);
+//        popupWindow.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+
+        return false;
     }
 }
