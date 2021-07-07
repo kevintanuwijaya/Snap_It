@@ -8,6 +8,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
+import com.huawei.agconnect.cloud.database.CloudDBZone;
+import com.huawei.agconnect.cloud.database.CloudDBZoneConfig;
+import com.huawei.agconnect.cloud.database.CloudDBZoneQuery;
+import com.huawei.agconnect.cloud.database.CloudDBZoneSnapshot;
+import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
+import com.huawei.hmf.tasks.OnFailureListener;
+import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.common.ApiException;
 import com.huawei.hms.support.account.AccountAuthManager;
@@ -16,9 +24,16 @@ import com.huawei.hms.support.account.request.AccountAuthParamsHelper;
 import com.huawei.hms.support.account.result.AuthAccount;
 import com.huawei.hms.support.account.service.AccountAuthService;
 
+import kevin.com.snapit.Model.ObjectTypeInfoHelper;
+import kevin.com.snapit.Model.Users;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private AGConnectCloudDB mCloudDB;
+
+    private CloudDBZone mCloudDBZone;
+    private CloudDBZoneConfig mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,18 +41,44 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
 
         findViewById(R.id.login_btn).setOnClickListener(this);
+
+        AGConnectCloudDB.initialize(this);
+
+        mCloudDB = AGConnectCloudDB.getInstance();
+        try {
+            mCloudDB.createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo());
+        } catch (AGConnectCloudDBException e) {
+            e.printStackTrace();
+        }
+
+        mConfig = new CloudDBZoneConfig("Users",
+                CloudDBZoneConfig.CloudDBZoneSyncProperty.CLOUDDBZONE_CLOUD_CACHE,
+                CloudDBZoneConfig.CloudDBZoneAccessProperty.CLOUDDBZONE_PUBLIC);
+        mConfig.setPersistenceEnabled(true);
+        Task<CloudDBZone> openDBZoneTask = mCloudDB.openCloudDBZone2(mConfig, true);
+        openDBZoneTask.addOnSuccessListener(new OnSuccessListener<CloudDBZone>() {
+            @Override
+            public void onSuccess(CloudDBZone cloudDBZone) {
+                Log.i(TAG, "open cloudDBZone success");
+                mCloudDBZone = cloudDBZone;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                Log.w(TAG, "open cloudDBZone failed for " + e.getMessage());
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login_btn:
-                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().createParams();
+                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setProfile().setMobileNumber().createParams();
                 AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
                 startActivityForResult(service1.getSignInIntent(), 2222);
                 break;
         }
-
     }
 
     @Override
@@ -50,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // The sign-in is successful, and the user's ID information and authorization code are obtained.
                 AuthAccount authAccount = authAccountTask.getResult();
                 Log.i(TAG, "serverAuthCode:" + authAccount.getAuthorizationCode());
-
+                //TODO CHECK DATABASE
                 startActivity(new Intent(this, MainActivity.class));
             } else {
                 // The sign-in failed.
@@ -59,4 +100,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     }
+
+    public void queryUsers(CloudDBZoneQuery<Users> query) {
+        if (mCloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-open it");
+            return;
+        }
+
+        Task<CloudDBZoneSnapshot<Users>> queryTask = mCloudDBZone.executeQuery(query,
+                CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
+        queryTask.addOnSuccessListener(new OnSuccessListener<CloudDBZoneSnapshot<Users>>() {
+            @Override
+            public void onSuccess(CloudDBZoneSnapshot<Users> snapshot) {
+                //processQueryResult(snapshot);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                //mUiCallBack.updateUiOnError("Query failed");
+            }
+        });
+    }
+
 }

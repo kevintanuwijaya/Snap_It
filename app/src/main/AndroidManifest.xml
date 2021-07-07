@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -18,6 +20,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SnapIt">
+        <activity android:name=".ImageCaptureActivity"></activity>
         <activity android:name=".LaunchAppActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,10 +30,8 @@
         </activity>
         <activity android:name=".SettingActivity" />
         <activity android:name=".CategoryOnMapActivity" />
-        <activity android:name=".ArticelDetailActivity" />z
-        <activity android:name=".LoginActivity">
-
-        </activity>
+        <activity android:name=".ArticelDetailActivity" />
+        <activity android:name=".LoginActivity"></activity>
         <activity android:name=".MainActivity" />
 
         <meta-data

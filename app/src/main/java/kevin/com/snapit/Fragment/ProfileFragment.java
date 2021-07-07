@@ -44,7 +44,7 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
     private ImageView profilePic;
     private Toolbar toolbar;
 
-//    private AuthAccount authAccount = MainActivity.authAccount;
+    private AuthAccount authAccount = MainActivity.authAccount;
 
 
     public ProfileFragment() {
@@ -85,8 +85,8 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
             nameLbl = view.findViewById(R.id.profile_name);
             toolbar = view.findViewById(R.id.profile_toolbar);
             profilePic = view.findViewById(R.id.profile_image);
-//            nameLbl.setText(authAccount.getDisplayName()+" "+authAccount.getFamilyName());
-//            profilePic.setImageURI(authAccount.getAvatarUri());
+            nameLbl.setText(authAccount.getDisplayName()+" "+authAccount.getFamilyName());
+            profilePic.setImageURI(authAccount.getAvatarUri());
 
             return view;
     }
