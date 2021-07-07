@@ -304,8 +304,8 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "onMarkerClick: IN");
-        @SuppressLint("ResourceType") LinearLayout floating_site_detail = findViewById(R.layout.floating_site_detail);
-        inflater.inflate(floating_site_detail, R.id.marker_detail_layout);
+//        @SuppressLint("ResourceType") LinearLayout floating_site_detail = findViewById(R.layout.floating_site_detail);
+//        inflater.inflate(floating_site_detail, R.id.marker_detail_layout);
         return false;
     }
 
