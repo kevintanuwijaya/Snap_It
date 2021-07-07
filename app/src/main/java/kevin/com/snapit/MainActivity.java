@@ -51,17 +51,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         String startFramgent = getIntent().getStringExtra("FRAGMENT");
 
-        if(startFramgent==null){
+        if (startFramgent == null){
             startFramgent = "Home";
         }
 
-        if(startFramgent.equals("Profile")){
-            fragment = new ProfileFragment();
-            loadFrame(fragment);
-        }else{
+//        if (startFramgent.equals("Profile")) {
+//            fragment = new ProfileFragment();
+//            loadFrame(fragment);
+//        } else {
             fragment = new HomeFragment();
             loadFrame(fragment);
-        }
+//        }
     }
 
 //    @Override
@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 fragment = new ProfileFragment();
                 loadFrame(fragment);
                 return true;
-
         }
         return false;
     }
@@ -127,7 +126,5 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 startActivity(failIntent);
             }
         });
-
-
     }
 }
