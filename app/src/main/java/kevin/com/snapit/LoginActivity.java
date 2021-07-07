@@ -5,14 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
 import com.huawei.agconnect.cloud.database.CloudDBZone;
 import com.huawei.agconnect.cloud.database.CloudDBZoneConfig;
+import com.huawei.agconnect.cloud.database.CloudDBZoneObjectList;
 import com.huawei.agconnect.cloud.database.CloudDBZoneQuery;
 import com.huawei.agconnect.cloud.database.CloudDBZoneSnapshot;
+import com.huawei.agconnect.cloud.database.ListenerHandler;
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
@@ -24,6 +27,9 @@ import com.huawei.hms.support.account.request.AccountAuthParamsHelper;
 import com.huawei.hms.support.account.result.AuthAccount;
 import com.huawei.hms.support.account.service.AccountAuthService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kevin.com.snapit.Model.ObjectTypeInfoHelper;
 import kevin.com.snapit.Model.Users;
 
@@ -34,6 +40,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private CloudDBZone mCloudDBZone;
     private CloudDBZoneConfig mConfig;
+    private ListenerHandler mRegister;
+    private List<Users> users = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +50,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         findViewById(R.id.login_btn).setOnClickListener(this);
 
-        AGConnectCloudDB.initialize(this);
+        initDB();
 
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login_btn:
+                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setProfile().setMobileNumber().createParams();
+                AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
+                startActivityForResult(service1.getSignInIntent(), 2222);
+                break;
+        }
+    }
+
+    private void initDB(){
+        AGConnectCloudDB.initialize(this);
         mCloudDB = AGConnectCloudDB.getInstance();
+
         try {
             mCloudDB.createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo());
         } catch (AGConnectCloudDBException e) {
@@ -61,6 +86,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess(CloudDBZone cloudDBZone) {
                 Log.i(TAG, "open cloudDBZone success");
                 mCloudDBZone = cloudDBZone;
+                Log.d("DataBase","Here");
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -68,17 +95,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Log.w(TAG, "open cloudDBZone failed for " + e.getMessage());
             }
         });
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.login_btn:
-                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setProfile().setMobileNumber().createParams();
-                AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
-                startActivityForResult(service1.getSignInIntent(), 2222);
-                break;
-        }
     }
 
     @Override
@@ -92,7 +108,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 AuthAccount authAccount = authAccountTask.getResult();
                 Log.i(TAG, "serverAuthCode:" + authAccount.getAuthorizationCode());
                 //TODO CHECK DATABASE
-                startActivity(new Intent(this, MainActivity.class));
+                Log.d("Database",""+authAccount.getEmail());
+
+                CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).contains("users_email",authAccount.getEmail());
+
+                queryUsers(query);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(users.isEmpty()){
+                            Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
+                            registerIntent.putExtra("EMAIL",authAccount.getEmail());
+                            registerIntent.putExtra("FIRST_NAME",authAccount.getGivenName());
+                            registerIntent.putExtra("LAST_NAME",authAccount.getFamilyName());
+                            startActivity(registerIntent);
+                        }else{
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        }
+                    }
+                },2000);
             } else {
                 // The sign-in failed.
                 Log.e(TAG, "sign in failed:" + ((ApiException) authAccountTask.getException()).getStatusCode());
@@ -106,20 +141,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Log.w(TAG, "CloudDBZone is null, try re-open it");
             return;
         }
-
-        Task<CloudDBZoneSnapshot<Users>> queryTask = mCloudDBZone.executeQuery(query,
-                CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
+        Task<CloudDBZoneSnapshot<Users>> queryTask = mCloudDBZone.executeQuery(query,CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
         queryTask.addOnSuccessListener(new OnSuccessListener<CloudDBZoneSnapshot<Users>>() {
             @Override
             public void onSuccess(CloudDBZoneSnapshot<Users> snapshot) {
-                //processQueryResult(snapshot);
+                processQueryResult(snapshot);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception e) {
-                //mUiCallBack.updateUiOnError("Query failed");
+
             }
         });
     }
+
+    private void processQueryResult(CloudDBZoneSnapshot<Users> snapshot) {
+        CloudDBZoneObjectList<Users> queryResultUser = snapshot.getSnapshotObjects();
+        try {
+            while (queryResultUser.hasNext()) {
+                Users user = queryResultUser.next();
+                users.add(user);
+                Log.d("DATABASE",user.getUsers_email()+" is added");
+            }
+        } catch (AGConnectCloudDBException e) {
+            Log.w(TAG, "processQueryResult: " + e.getMessage());
+        }
+        snapshot.release();
+    }
+
+
 
 }

@@ -20,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SnapIt">
-        <activity android:name=".ImageCaptureActivity"></activity>
+        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".ImageCaptureActivity" />
         <activity android:name=".LaunchAppActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +32,7 @@
         <activity android:name=".SettingActivity" />
         <activity android:name=".CategoryOnMapActivity" />
         <activity android:name=".ArticelDetailActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
 
         <meta-data

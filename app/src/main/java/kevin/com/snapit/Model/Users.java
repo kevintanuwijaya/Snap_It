@@ -20,6 +20,7 @@ import java.util.Date;
  * @since 2021-07-07
  */
 @PrimaryKeys({"users_email"})
+@Indexes({"users_email:users_email"})
 public final class Users extends CloudDBZoneObject {
     private String users_email;
 
