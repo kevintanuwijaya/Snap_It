@@ -73,7 +73,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     private SearchService searchService;
     private List<Site> sites = new ArrayList<Site>();
 
-    private PopupWindow popupWindow;
 
 
     @Override
@@ -343,34 +342,13 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "onMarkerClick: IN");
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View detailView = null;
 
         TextView textView = (TextView) findViewById(R.id.detail_title);
-
-//        popupWindow = new PopupWindow(this);
-
-
-//        LinearLayout detailLayout = findViewById(R.id.detail_layout);
-//        try {
-//            detailView = getLayoutInflater().inflate(R.layout.floating_site_detail, detailLayout, false);
-//        } catch (Exception e) {
-//            Log.d(TAG, "onMarkerClick: CATCH GAGAL");
-//        }
         textView.setText(marker.getTitle());
 
-//        detailLayout.addView(detailView);
+        ImageView imageView = (ImageView) findViewById(R.id.detail_image);
+        //TODO tambahain search kit, terus pake image search buat dapet image nya
 
-
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT);
-//        layout.setOrientation(LinearLayout.VERTICAL);
-//        textView.setText(marker.getTitle());
-//        imageView.setImageResource(R.drawable.restaurant);
-//        layout.addView(textView, params);
-//        layout.addView(imageView, params);
-//        popupWindow.setContentView(layout);
-//        popupWindow.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
 
         return false;
     }
