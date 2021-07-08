@@ -22,8 +22,7 @@
         android:theme="@style/Theme.SnapIt">
         <activity android:name=".RegisterActivity"></activity>
         <activity android:name=".ImageCaptureActivity" />
-<!--        TODO harusnya launchAppActivity-->
-        <activity android:name=".MainActivity">
+        <activity android:name=".LaunchAppActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,11 +33,12 @@
         <activity android:name=".CategoryOnMapActivity" />
         <activity android:name=".ArticelDetailActivity" />
         <activity android:name=".LoginActivity" />
-<!--        <activity android:name=".MainActivity" />-->
+        <activity android:name=".MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
 
 </manifest>
