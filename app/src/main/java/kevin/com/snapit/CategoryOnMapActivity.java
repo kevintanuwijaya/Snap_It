@@ -5,8 +5,10 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
+import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.common.ApiException;
 import com.huawei.hms.common.ResolvableApiException;
 import com.huawei.hms.location.FusedLocationProviderClient;
@@ -42,6 +45,12 @@ import com.huawei.hms.maps.SupportMapFragment;
 import com.huawei.hms.maps.model.LatLng;
 import com.huawei.hms.maps.model.Marker;
 import com.huawei.hms.maps.model.MarkerOptions;
+import com.huawei.hms.searchkit.SearchKitInstance;
+import com.huawei.hms.searchkit.bean.BaseSearchResponse;
+import com.huawei.hms.searchkit.bean.CommonSearchRequest;
+import com.huawei.hms.searchkit.bean.ImageItem;
+import com.huawei.hms.searchkit.utils.Language;
+import com.huawei.hms.searchkit.utils.Region;
 import com.huawei.hms.site.api.SearchResultListener;
 import com.huawei.hms.site.api.SearchService;
 import com.huawei.hms.site.api.SearchServiceFactory;
@@ -51,9 +60,15 @@ import com.huawei.hms.site.api.model.NearbySearchRequest;
 import com.huawei.hms.site.api.model.NearbySearchResponse;
 import com.huawei.hms.site.api.model.SearchStatus;
 import com.huawei.hms.site.api.model.Site;
+import com.huawei.hms.support.account.AccountAuthManager;
+import com.huawei.hms.support.account.request.AccountAuthParams;
+import com.huawei.hms.support.account.request.AccountAuthParamsHelper;
+import com.huawei.hms.support.account.result.AuthAccount;
+import com.huawei.hms.support.account.service.AccountAuthService;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -73,7 +88,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     private SearchService searchService;
     private List<Site> sites = new ArrayList<Site>();
 
-
+//    private BaseSearchResponse<List<ImageItem>> response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +103,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
 
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -96,7 +110,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        moveCameraAndAddMarker();
+                        moveCameraAndAddMarker(getIntent().getStringExtra("CATEGORY"));
                     }
                 }, 3000);
             }
@@ -246,7 +260,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         hMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
-    private void moveCameraAndAddMarker() {
+    private void moveCameraAndAddMarker(String category) {
         LatLng pos = new LatLng(currPosition.latitude, currPosition.longitude);
         Log.d(TAG, "moveCameraAndAddMarker: " + pos);
 
@@ -254,7 +268,8 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
             Log.d(TAG, "Site Marked " + " " + site.getName());
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(site.getLocation().getLat(), site.getLocation().getLng()))
-                    .title(site.getName());
+                    .title(site.getName())
+                    .snippet(category);
             mMarker = hMap.addMarker(options);
         }
 
@@ -299,6 +314,43 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         return type;
     }
 
+    //TODO method buat munculin image di detail, dipake sementara sampe bisa pake search kit
+    private int getTempImage(String key) {
+        int result = 0;
+
+        switch (key) {
+            case "Restaurant":
+                result = R.drawable.restaurant;
+                break;
+            case "Petrol Station":
+                result = R.drawable.petrol;
+                break;
+            case "Shop":
+                result = R.drawable.onlineshopping;
+                break;
+            case "Museum":
+                result = R.drawable.museum;
+                break;
+            case "Hotel":
+                result = R.drawable.hotel;
+                break;
+            case "Hospital":
+                result = R.drawable.hospital;
+                break;
+            case "Cinema":
+                result = R.drawable.cinema;
+                break;
+            case "Bank":
+                result = R.drawable.bank;
+                break;
+            case "Amusement Park":
+                result = R.drawable.amusementpark;
+                break;
+        }
+
+        return result;
+    }
+
     private void dynamicPermission() {
         // Dynamically apply for required permissions if the API level is 28 or smaller.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
@@ -327,6 +379,26 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         }
     }
 
+    //TODO method buat pake search kit, tapi gajadi dipake karena time constraint
+//    private void imageSearch(String query) {
+//        Log.d(TAG, "imageSearch: ");
+//        CommonSearchRequest commonSearchRequest = new CommonSearchRequest();
+//        // Set the search keyword.
+//        commonSearchRequest.setQ(query);
+//        // Set the language for search.
+//        commonSearchRequest.setLang(Language.ENGLISH);
+//        // Set the region for search.
+//        commonSearchRequest.setSregion(Region.SINGAPORE);
+//        // Set the number of search results returned on a page.
+//        commonSearchRequest.setPs(10);
+//        // Set the page number.
+//        commonSearchRequest.setPn(1);
+//
+//        SearchKitInstance.getInstance().getImageSearcher().setCredential(TOKEN);
+//
+//        response = SearchKitInstance.getInstance().getImageSearcher().search(commonSearchRequest);
+//    }
+
     private String getApi() {
         String API = "CgB6e3x9a4NNICDnGnFCV8+aBktmeoZWbiCIcGNQgzzmkzM2oPozCF5/YlX0DsOMAdd+6rsKevlDLTYy5ROFchTz";
 
@@ -337,8 +409,6 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         }
     }
 
-
-    //TODO Benerin detail Linear Layout nya
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "onMarkerClick: IN");
@@ -347,9 +417,8 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         textView.setText(marker.getTitle());
 
         ImageView imageView = (ImageView) findViewById(R.id.detail_image);
-        //TODO tambahain search kit, terus pake image search buat dapet image nya
-
+        imageView.setImageResource(getTempImage(marker.getSnippet()));
 
         return false;
     }
-}
+    }
