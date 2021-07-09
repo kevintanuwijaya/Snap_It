@@ -36,8 +36,8 @@ import kevin.com.snapit.Model.Users;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
-    private AGConnectCloudDB mCloudDB;
 
+    private AGConnectCloudDB mCloudDB;
     private CloudDBZone mCloudDBZone;
     private CloudDBZoneConfig mConfig;
     private ListenerHandler mRegister;
@@ -70,29 +70,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         AGConnectCloudDB.initialize(this);
         mCloudDB = AGConnectCloudDB.getInstance();
 
+
         try {
             mCloudDB.createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo());
         } catch (AGConnectCloudDBException e) {
             e.printStackTrace();
         }
 
-        mConfig = new CloudDBZoneConfig("Users",
+        mConfig = new CloudDBZoneConfig("User",
                 CloudDBZoneConfig.CloudDBZoneSyncProperty.CLOUDDBZONE_CLOUD_CACHE,
                 CloudDBZoneConfig.CloudDBZoneAccessProperty.CLOUDDBZONE_PUBLIC);
         mConfig.setPersistenceEnabled(true);
+
         Task<CloudDBZone> openDBZoneTask = mCloudDB.openCloudDBZone2(mConfig, true);
         openDBZoneTask.addOnSuccessListener(new OnSuccessListener<CloudDBZone>() {
             @Override
             public void onSuccess(CloudDBZone cloudDBZone) {
-                Log.i(TAG, "open cloudDBZone success");
+                Log.w(TAG, "open clouddbzone success");
                 mCloudDBZone = cloudDBZone;
-                Log.d("DataBase","Here");
-
+                // Add subscription after opening cloudDBZone success
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception e) {
-                Log.w(TAG, "open cloudDBZone failed for " + e.getMessage());
+                Log.w(TAG, "open clouddbzone failed for " + e.getMessage());
             }
         });
     }
@@ -110,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 //TODO CHECK DATABASE
                 Log.d("Database",""+authAccount.getEmail());
 
-                CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).contains("users_email",authAccount.getEmail());
+                CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).equalTo("users_email",authAccount.getEmail());
 
                 queryUsers(query);
 
@@ -169,6 +170,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         snapshot.release();
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            mCloudDB.closeCloudDBZone(mCloudDBZone);
+        } catch (AGConnectCloudDBException e) {
+            e.printStackTrace();
+        }
+    }
 }

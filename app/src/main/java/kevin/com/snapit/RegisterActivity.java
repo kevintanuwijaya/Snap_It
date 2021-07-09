@@ -9,6 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.huawei.agconnect.auth.AGConnectAuth;
+import com.huawei.agconnect.auth.AGConnectUser;
+import com.huawei.agconnect.auth.SignInResult;
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
 import com.huawei.agconnect.cloud.database.CloudDBZone;
 import com.huawei.agconnect.cloud.database.CloudDBZoneConfig;
@@ -29,6 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     private AGConnectCloudDB mCloudDB;
     private CloudDBZoneConfig mConfig;
     private CloudDBZone mCloudDBZone;
+    private AGConnectUser anonymousUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +51,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                 user.setUsers_email(email);
                 user.setUsers_name(name);
+                Log.d("INSERT",email);
+                Log.d("INSERT",name);
 
-                upsertUsersInfos(user);
+                signInAnonymus(user);
 
                 Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
                 startActivity(intent);
@@ -81,10 +87,12 @@ public class RegisterActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mConfig = new CloudDBZoneConfig("Users",
+        mConfig = new CloudDBZoneConfig("User",
                 CloudDBZoneConfig.CloudDBZoneSyncProperty.CLOUDDBZONE_CLOUD_CACHE,
                 CloudDBZoneConfig.CloudDBZoneAccessProperty.CLOUDDBZONE_PUBLIC);
         mConfig.setPersistenceEnabled(true);
+
+
         Task<CloudDBZone> openDBZoneTask = mCloudDB.openCloudDBZone2(mConfig, true);
         openDBZoneTask.addOnSuccessListener(new OnSuccessListener<CloudDBZone>() {
             @Override
@@ -108,11 +116,26 @@ public class RegisterActivity extends AppCompatActivity {
             Log.w(TAG, "CloudDBZone is null, try re-openit");
             return;
         }
-        Task upsertTask = mCloudDBZone.executeUpsert(users);
-        upsertTask.addOnSuccessListener(new OnSuccessListener() {
+        Task<Integer> upsertTask = mCloudDBZone.executeUpsert(users);
+        upsertTask.addOnSuccessListener(new OnSuccessListener<Integer>() {
             @Override
-            public void onSuccess(Object o) {
-                Log.i(TAG, ""+o.toString());
+            public void onSuccess(Integer cloudDBZoneResult) {
+                Log.w(TAG, "upsert " + cloudDBZoneResult + " records");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                Log.d(TAG,"Upsert Failed");
+            }
+        });
+    }
+
+    private void signInAnonymus(Users user){
+        AGConnectAuth.getInstance().signInAnonymously().addOnSuccessListener(new OnSuccessListener<SignInResult>() {
+            @Override
+            public void onSuccess(SignInResult signInResult) {
+                anonymousUser = signInResult.getUser();
+                upsertUsersInfos(user);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -120,5 +143,15 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            mCloudDB.closeCloudDBZone(mCloudDBZone);
+        } catch (AGConnectCloudDBException e) {
+            e.printStackTrace();
+        }
     }
 }

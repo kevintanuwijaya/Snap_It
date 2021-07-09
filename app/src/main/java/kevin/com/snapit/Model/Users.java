@@ -17,7 +17,7 @@ import java.util.Date;
 /**
  * Definition of ObjectType Users.
  *
- * @since 2021-07-07
+ * @since 2021-07-09
  */
 @PrimaryKeys({"users_email"})
 @Indexes({"users_email:users_email"})
@@ -25,12 +25,17 @@ public final class Users extends CloudDBZoneObject {
     private String users_email;
 
     @NotNull
-    @DefaultValue(stringValue = "person")
+    @DefaultValue(stringValue = "name")
     private String users_name;
+
+    @NotNull
+    @DefaultValue(stringValue = "0")
+    private String users_number;
 
     public Users() {
         super(Users.class);
-        this.users_name = "person";
+        this.users_name = "name";
+        this.users_number = "0";
     }
 
     public void setUsers_email(String users_email) {
@@ -47,6 +52,14 @@ public final class Users extends CloudDBZoneObject {
 
     public String getUsers_name() {
         return users_name;
+    }
+
+    public void setUsers_number(String users_number) {
+        this.users_number = users_number;
+    }
+
+    public String getUsers_number() {
+        return users_number;
     }
 
 }
