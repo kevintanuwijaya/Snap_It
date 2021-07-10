@@ -70,8 +70,8 @@ public class LaunchAppActivity extends AppCompatActivity {
                             }
                         });
                     }
-                },2000);
+                },1500);
             }
-        },4000);
+        },1500);
     }
 }
