@@ -17,10 +17,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/detail_layout"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="301dp"
         android:layout_gravity="bottom"
-        android:padding="10dp"
         android:background="@drawable/rounded_item"
+        android:padding="10dp"
         tools:layout_editor_absoluteX="134dp"
         tools:layout_editor_absoluteY="93dp">
 
@@ -37,12 +37,13 @@
         <TextView
             android:id="@+id/detail_title"
             android:layout_width="match_parent"
-            android:layout_height="25sp"
-            android:layout_marginTop="30dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="40dp"
             android:textAlignment="center"
-            android:textColor="@color/red"
+            android:textColor="@color/cardview_dark_background"
+            android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.842"
+            app:layout_constraintHorizontal_bias="0.157"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detail_image" />
 
