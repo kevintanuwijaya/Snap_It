@@ -1,6 +1,7 @@
 package kevin.com.snapit;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -30,6 +31,7 @@ import com.huawei.hms.support.account.service.AccountAuthService;
 import java.util.ArrayList;
 import java.util.List;
 
+import kevin.com.snapit.Model.LoadingDialog;
 import kevin.com.snapit.Model.ObjectTypeInfoHelper;
 import kevin.com.snapit.Model.Users;
 
@@ -42,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private CloudDBZoneConfig mConfig;
     private ListenerHandler mRegister;
     private List<Users> users = new ArrayList<>();
+    private LoadingDialog loadingDialog = new LoadingDialog(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +54,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.login_btn).setOnClickListener(this);
 
         initDB();
-
-
     }
 
     @Override
@@ -88,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onSuccess(CloudDBZone cloudDBZone) {
                 Log.w(TAG, "open clouddbzone success");
                 mCloudDBZone = cloudDBZone;
-                // Add subscription after opening cloudDBZone success
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -108,17 +109,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // The sign-in is successful, and the user's ID information and authorization code are obtained.
                 AuthAccount authAccount = authAccountTask.getResult();
                 Log.i(TAG, "serverAuthCode:" + authAccount.getAuthorizationCode());
-                //TODO CHECK DATABASE
+
                 Log.d("Database",""+authAccount.getEmail());
 
                 CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).equalTo("users_email",authAccount.getEmail());
 
                 queryUsers(query);
 
+                loadingDialog.startDialog();
+
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         if(users.isEmpty()){
+                            loadingDialog.dismissDialog();
                             Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
                             registerIntent.putExtra("EMAIL",authAccount.getEmail());
                             registerIntent.putExtra("FIRST_NAME",authAccount.getGivenName());

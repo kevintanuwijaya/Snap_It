@@ -110,7 +110,6 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    //TODO insert masih belum jalan
     private void upsertUsersInfos(Users users) {
         if (mCloudDBZone == null) {
             Log.w(TAG, "CloudDBZone is null, try re-openit");
