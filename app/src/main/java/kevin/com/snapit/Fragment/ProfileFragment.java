@@ -1,6 +1,9 @@
 package kevin.com.snapit.Fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
@@ -15,7 +18,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.huawei.hms.support.account.result.AuthAccount;
+import com.squareup.picasso.Picasso;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import kevin.com.snapit.Adapter.SettingsAdapter;
@@ -40,7 +49,9 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
     private String mParam1;
     private String mParam2;
 
-    private TextView nameLbl;
+    private final String TAG = ProfileFragment.class.getSimpleName();
+
+    private TextView nameLbl,emaillbl;
     private ImageView profilePic;
     private Toolbar toolbar;
 
@@ -85,11 +96,16 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
             nameLbl = view.findViewById(R.id.profile_name);
             toolbar = view.findViewById(R.id.profile_toolbar);
             profilePic = view.findViewById(R.id.profile_image);
+            emaillbl = view.findViewById(R.id.profile_email);
+
             nameLbl.setText(authAccount.getDisplayName()+" "+authAccount.getFamilyName());
-            profilePic.setImageURI(authAccount.getAvatarUri());
+            emaillbl.setText(authAccount.getEmail());
+
+            Picasso.get().load(authAccount.getAvatarUri()).resize(300,300).centerCrop().into(profilePic);
 
             return view;
     }
+
 
     @Override
     public void onResume() {
