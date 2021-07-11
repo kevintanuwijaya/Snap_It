@@ -38,10 +38,13 @@ import com.huawei.hms.support.account.service.AccountAuthService;
 import com.huawei.hms.support.hwid.request.HuaweiIdAuthParams;
 import com.huawei.hms.support.hwid.request.HuaweiIdAuthParamsHelper;
 
+import java.util.ArrayList;
+
 import kevin.com.snapit.Fragment.HomeFragment;
 import kevin.com.snapit.Fragment.MapFragment;
 import kevin.com.snapit.Fragment.ProfileFragment;
 import kevin.com.snapit.Fragment.SearchFragment;
+import kevin.com.snapit.Model.Users;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
@@ -56,8 +59,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public static AuthAccount authAccount;
 
     private Uri image_uri;
-
-    private AuthAccount authAccount1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
     private void silentSignIn(){
-        AccountAuthParams accountAuthParams = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().createParams();
+        AccountAuthParams accountAuthParams = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setMobileNumber().setProfile().setIdToken().createParams();
         AccountAuthService accountAuthService = AccountAuthManager.getService(MainActivity.this,accountAuthParams);
 
         Task<AuthAccount> silentSignin = accountAuthService.silentSignIn();
