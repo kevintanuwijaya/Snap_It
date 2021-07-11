@@ -71,6 +71,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import kevin.com.snapit.Model.LoadingDialog;
+
 
 public class CategoryOnMapActivity extends AppCompatActivity implements OnMapReadyCallback, HuaweiMap.OnMarkerClickListener {
 
@@ -103,6 +105,9 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         mSupportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapFragment);
         mSupportMapFragment.getMapAsync(this);
 
+        LoadingDialog loadingDialog = new LoadingDialog(this);
+        loadingDialog.startDialog();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -111,6 +116,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                     @Override
                     public void run() {
                         moveCameraAndAddMarker(getIntent().getStringExtra("CATEGORY"));
+                        loadingDialog.dismissDialog();
                     }
                 }, 3000);
             }
