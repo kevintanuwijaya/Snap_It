@@ -21,8 +21,6 @@ import com.huawei.hms.support.account.request.AccountAuthParamsHelper;
 import com.huawei.hms.support.account.result.AuthAccount;
 import com.huawei.hms.support.account.service.AccountAuthService;
 
-import kevin.com.snapit.Model.LoadingDialog;
-
 public class LaunchAppActivity extends AppCompatActivity {
 
     private ImageView icon;
@@ -30,7 +28,6 @@ public class LaunchAppActivity extends AppCompatActivity {
     private Animation iconAnim, textAnim;
     private AccountAuthParams accountAuthParams;
     private AccountAuthService accountAuthService;
-    private LoadingDialog loadingDialog = new LoadingDialog(this);
 
 
     @Override
@@ -58,26 +55,23 @@ public class LaunchAppActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         name.setVisibility(View.VISIBLE);
-                        loadingDialog.startDialog();
                         Task<AuthAccount> silentSignin = accountAuthService.silentSignIn();
                         silentSignin.addOnSuccessListener(new OnSuccessListener<AuthAccount>() {
                             @Override
                             public void onSuccess(AuthAccount authAccount) {
-                                loadingDialog.dismissDialog();
                                 Intent successIntent = new Intent(LaunchAppActivity.this,MainActivity.class);
                                 startActivity(successIntent);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(Exception e) {
-                                loadingDialog.dismissDialog();
                                 Intent failIntent = new Intent(LaunchAppActivity.this, LoginActivity.class);
                                 startActivity(failIntent);
                             }
                         });
                     }
-                },1000);
+                },1500);
             }
-        },2000);
+        },1500);
     }
 }
