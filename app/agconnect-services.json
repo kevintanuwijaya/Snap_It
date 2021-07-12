@@ -43,7 +43,8 @@
 			"url":"https://search-dra.cloud.huawei.com"
 		},
 		"cloudstorage":{
-			"storage_url":"https://ops-dra.agcstorage.link"
+			"storage_url":"https://ops-dra.agcstorage.link",
+			"default_storage":"users-iihs6"
 		},
 		"ml":{
 			"mlservice_url":"ml-api-dra.ai.dbankcloud.com,ml-api-dra.ai.dbankcloud.cn"
