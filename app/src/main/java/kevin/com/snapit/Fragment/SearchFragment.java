@@ -214,6 +214,7 @@ public class SearchFragment extends Fragment {
 
     public void queryUsers(CloudDBZoneQuery<Users> query) {
         if (mCloudDBZone == null) {
+            reloadPage();
             Log.w(TAG, "CloudDBZone is null, try re-open it");
             return;
         }
@@ -229,12 +230,16 @@ public class SearchFragment extends Fragment {
             public void onFailure(Exception e) {
                 Toast.makeText(getContext(),"Search Failed",Toast.LENGTH_SHORT).show();
                 Log.d(TAG,e.getMessage());
-                FragmentTransaction fragmentTransaction = ((FragmentActivity)getContext()).getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.main_frame,new SearchFragment());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+                reloadPage();
             }
         });
+    }
+
+    private void reloadPage(){
+        FragmentTransaction fragmentTransaction = ((FragmentActivity)getContext()).getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_frame,new SearchFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void processQueryResult(CloudDBZoneSnapshot<Users> snapshot) {
