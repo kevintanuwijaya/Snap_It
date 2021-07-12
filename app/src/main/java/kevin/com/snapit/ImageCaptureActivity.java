@@ -142,7 +142,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
         StorageReference storageReference = agcStorageManagement.getStorageReference(files+imageName);
 
         try {
-            Log.d(TAG,"MASUK");
+            Log.d(TAG,storageReference.toString());
             UploadTask uploadTask = storageReference.putFile(file);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
