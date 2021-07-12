@@ -139,7 +139,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
             return;
         }
 
-        StorageReference storageReference = agcStorageManagement.getStorageReference(files+imageName);
+        StorageReference storageReference = agcStorageManagement.getStorageReference(files + imageName);
 
         try {
             Log.d(TAG,"MASUK");
@@ -147,6 +147,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(Exception e) {
+                    Log.d(TAG, "onFailure: " + e);
                     Log.d(TAG,"Upload Failed");
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.UploadResult>() {

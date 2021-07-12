@@ -9,23 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import kevin.com.snapit.ArticelDetailActivity;
-import kevin.com.snapit.MainActivity;
-import kevin.com.snapit.Model.Articel;
+import kevin.com.snapit.Model.Article;
 import kevin.com.snapit.R;
 
-public class ArticelAdapter extends RecyclerView.Adapter<ArticelAdapter.ViewHolder> {
+public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
     private Context context;
-    private ArrayList<Articel> articels;
+    private ArrayList<Article> articels;
 
-    public ArticelAdapter(Context context, ArrayList<Articel> articels) {
+    public ArticleAdapter(Context context, ArrayList<Article> articels) {
         this.context = context;
         this.articels = articels;
     }
@@ -34,7 +31,7 @@ public class ArticelAdapter extends RecyclerView.Adapter<ArticelAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.articel_home_column,parent,false);
+        View view = layoutInflater.inflate(R.layout.article_home_column,parent,false);
         return new ViewHolder(view);
     }
 

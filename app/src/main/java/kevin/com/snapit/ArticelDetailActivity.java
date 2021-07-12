@@ -3,26 +3,24 @@ package kevin.com.snapit;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import kevin.com.snapit.Model.Articel;
+import kevin.com.snapit.Model.Article;
 
 public class ArticelDetailActivity extends AppCompatActivity{
 
     private TextView title, author, contain;
     private ImageView image;
-    private Articel currentArticel;
+    private Article currentArticel;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_articel_detail);
+        setContentView(R.layout.activity_article_detail);
         currentArticel = getIntent().getParcelableExtra("ARTICEL");
 
         toolbar = findViewById(R.id.articeldetail_toolbar);
