@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,9 +20,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
 import com.huawei.agconnect.cloud.database.CloudDBZone;
 import com.huawei.agconnect.cloud.database.CloudDBZoneConfig;
@@ -52,9 +56,6 @@ public class SearchFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-
-
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -67,11 +68,10 @@ public class SearchFragment extends Fragment {
     private CloudDBZone mCloudDBZone;
 
     private RecyclerView userRecycle;
-    private SearchView searchView;
+    private EditText searchView;
 
     private ArrayList<Users> users = new ArrayList<Users>();
     private UserAdapter userAdapter;
-
 
 
     public SearchFragment() {
@@ -121,6 +121,7 @@ public class SearchFragment extends Fragment {
                     public void run() {
                         loadingDialog.dismissDialog();
                         Log.d(TAG,"Insert to Adapter");
+                        Log.d(TAG, "searView: " + searchView);
                         userAdapter = new UserAdapter(getActivity(),users);
                         userRecycle.setAdapter(userAdapter);
                         userRecycle.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -131,53 +132,41 @@ public class SearchFragment extends Fragment {
 
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search,null);
         userRecycle = view.findViewById(R.id.search_user_recycle);
-        return view;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-        inflater.inflate(R.menu.search_menu,menu);
-
-        MenuItem menuItem = menu.findItem(R.id.app_bar_search);
-        searchView = (SearchView) menuItem.getActionView();
-        searchView.setQueryHint("Search");
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            //TODO MASIH BELUM BENER
+        searchView = (EditText) view.findViewById(R.id.search_query);
+        searchView.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d(TAG,"Search Clicked");
-                return true;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Log.d(TAG,"Filtering");
                 ArrayList<Users> filterUser = new ArrayList<Users>(users);
                 UserAdapter currentAdapter;
-                if(newText != null || !newText.isEmpty()){
+                if(s != null || !s.toString().isEmpty()){
                     filterUser.removeAll(filterUser);
                     for (Users user : users){
-                        if(user.getUsers_name().toLowerCase().contains(newText.toLowerCase())){
+                        if(user.getUsers_name().toLowerCase().contains(s.toString().toLowerCase())){
                             filterUser.add(user);
                         }
                     }
                 }
                 currentAdapter = new UserAdapter(getActivity(),filterUser);
                 userRecycle.setAdapter(currentAdapter);
-                return false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
-
-        super.onCreateOptionsMenu(menu,inflater);
-        super.onCreateOptionsMenu(menu,inflater);
+        return view;
     }
 
     private void initDB(){
