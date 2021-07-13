@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.huawei.hms.maps.model.LatLng;
 
 public class Location implements Parcelable {
-    private int image;
+    String image;
     String name;
     String address;
     String postalCode;
@@ -18,7 +18,7 @@ public class Location implements Parcelable {
     double distance;
     double rating;
 
-    public Location(int image, String name, String address, String postalCode, String country, String phone, String website, double latitude, double longitude, double distance, double rating) {
+    public Location(String image, String name, String address, String postalCode, String country, String phone, String website, double latitude, double longitude, double distance, double rating) {
         this.image = image;
         this.name = name;
         this.address = address;
@@ -33,7 +33,7 @@ public class Location implements Parcelable {
     }
 
     protected Location(Parcel in) {
-        image = in.readInt();
+        image = in.readString();
         name = in.readString();
         address = in.readString();
         postalCode = in.readString();
@@ -58,7 +58,7 @@ public class Location implements Parcelable {
         }
     };
 
-    public int getImage() {
+    public String getImage() {
         return image;
     }
 
@@ -110,7 +110,7 @@ public class Location implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(image);
+        dest.writeString(image);
         dest.writeString(name);
         dest.writeString(address);
         dest.writeString(postalCode);

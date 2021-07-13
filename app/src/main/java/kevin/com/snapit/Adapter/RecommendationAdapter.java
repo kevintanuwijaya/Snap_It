@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 import kevin.com.snapit.Model.Location;
@@ -36,9 +38,9 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
 
     @Override
     public void onBindViewHolder(@NonNull RecommendationAdapter.ViewHolder holder, int position) {
-        holder.image.setImageResource(locations.get(position).getImage());
+        Picasso.get().load(locations.get(position).getImage()).into(holder.image);
         holder.title.setText(locations.get(position).getName());
-        holder.address.setText(locations.get(position).getAddress());
+        holder.distance.setText(Double.toString(locations.get(position).getDistance()) + " km from your current location");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,13 +60,13 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView image;
-        private TextView title, address;
+        private TextView title, distance;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.home_recommendation_image);
             title = itemView.findViewById(R.id.recommendation_title);
-            address = itemView.findViewById(R.id.recommendation_address);
+            distance = itemView.findViewById(R.id.recommendation_address);
         }
     }
 }

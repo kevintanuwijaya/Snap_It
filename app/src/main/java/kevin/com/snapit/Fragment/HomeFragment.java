@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,6 +54,7 @@ import com.huawei.hms.site.api.model.NearbySearchRequest;
 import com.huawei.hms.site.api.model.NearbySearchResponse;
 import com.huawei.hms.site.api.model.SearchStatus;
 import com.huawei.hms.site.api.model.Site;
+import com.squareup.picasso.Picasso;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -180,7 +182,6 @@ public class HomeFragment extends Fragment {
         RecommendationAdapter recommendationAdapter = new RecommendationAdapter(getActivity(), locationList);
         recycler_recommendation.setAdapter(recommendationAdapter);
         recycler_recommendation.setLayoutManager(recommendationLayout);
-
     }
 
     @Override
@@ -189,10 +190,8 @@ public class HomeFragment extends Fragment {
 
     }
 
+    //TODO kalo bisa tambahin autu refresh supaya recommendation nya muncul
     private void init(){
-        LoadingDialog loadingDialog = new LoadingDialog(getContext());
-        loadingDialog.startDialog();
-
         // For Category
         int[] iconImages = {R.drawable.restaurant, R.drawable.petrol, R.drawable.onlineshopping,
                             R.drawable.museum, R.drawable.hotel, R.drawable.hospital,
@@ -216,7 +215,6 @@ public class HomeFragment extends Fragment {
             articelList.add(articel);
         }
 
-        //TODO bikin icon nya supaya bener
         // For Recommendation
         HwLocationType[] PoiLocationType = { HwLocationType.RESTAURANT, HwLocationType.PETROL_STATION, HwLocationType.SHOP,
                                                 HwLocationType.MUSEUM, HwLocationType.HOTEL, HwLocationType.GENERAL_HOSPITAL,
@@ -245,18 +243,18 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 for(int index = 0; index < sites.size(); index++){
-                    Location location = new Location(iconImages[index], sites.get(index).getName(), sites.get(index).getAddress().toString(),
-                            sites.get(index).getAddress().getPostalCode(), sites.get(index).getAddress().getCountry(),
-                            sites.get(index).getPoi().getPhone(), sites.get(index).getPoi().getWebsiteUrl(),
-                            sites.get(index).getLocation().getLat(), sites.get(index).getLocation().getLng(),
-                            sites.get(index).getDistance(), sites.get(index).getPoi().getRating());
-                    Log.d(TAG, "run add location: " + location.getName());
+                    String key =sites.get(index).getPoi().getIcon();
+                    Location location = new Location(key, sites.get(index).getName(),
+                            sites.get(index).getAddress().toString(), sites.get(index).getAddress().getPostalCode(),
+                            sites.get(index).getAddress().getCountry(), sites.get(index).getPoi().getPhone(),
+                            sites.get(index).getPoi().getWebsiteUrl(), sites.get(index).getLocation().getLat(),
+                            sites.get(index).getLocation().getLng(), sites.get(index).getDistance(),
+                            sites.get(index).getPoi().getRating());
+                    Log.d(TAG, "run PoiTypes: " + sites.get(index).getAddress().toString());
                     locationList.add(location);
                 }
             }
         }, 3000);
-
-        loadingDialog.dismissDialog();
     }
 
     private void loadAd(String adId) {
@@ -322,7 +320,6 @@ public class HomeFragment extends Fragment {
             ((Button) nativeView.getCallToActionView()).setText(nativeAd.getCallToAction());
         }
         nativeView.getCallToActionView().setVisibility(null != nativeAd.getCallToAction() ? View.VISIBLE : View.INVISIBLE);
-
 
         // Register a native ad object.
         nativeView.setNativeAd(nativeAd);
@@ -448,6 +445,7 @@ public class HomeFragment extends Fragment {
         // Call the nearby place search API.
         searchService.nearbySearch(request, resultListener);
     }
+
 
     private void dynamicPermission() {
         // Dynamically apply for required permissions if the API level is 28 or smaller.
