@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/profile_appbar"
+            android:id="@+id/friend_profile_appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white">
@@ -27,10 +27,11 @@
 
 
         <LinearLayout
+            android:id="@+id/friend_profile_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="30px"
-            android:layout_below="@+id/profile_appbar"
+            android:layout_below="@+id/friend_profile_appbar"
             android:orientation="vertical">
 
             <LinearLayout
@@ -72,6 +73,12 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/friend_picture_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/friend_profile_detail"/>
 
 
     </RelativeLayout>
