@@ -106,30 +106,31 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map,null);
 
-        LoadingDialog loadingDialog = new LoadingDialog(getContext());
-        loadingDialog.startDialog();
+        // TODO uncomment kalo mau ada map nya
+//        LoadingDialog loadingDialog = new LoadingDialog(getContext());
+//        loadingDialog.startDialog();
 
-        mMapView = view.findViewById(R.id.mapView);
-        Bundle mapViewBundle = null;
-        if(savedInstanceState != null){
-            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
-        }
-        mMapView.onCreate(mapViewBundle);
-        mMapView.getMapAsync(this);
-
-        Log.d(TAG, "onCreateView: ");
-        dynamicPermission();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
-        getCurrentLocation();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                moveCamera();
-                loadingDialog.dismissDialog();
-            }
-        }, 2000);
-
+//        mMapView = view.findViewById(R.id.mapView);
+//        Bundle mapViewBundle = null;
+//        if(savedInstanceState != null){
+//            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+//        }
+//        mMapView.onCreate(mapViewBundle);
+//        mMapView.getMapAsync(this);
+//
+//        Log.d(TAG, "onCreateView: ");
+//        dynamicPermission();
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+//        getCurrentLocation();
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                moveCamera();
+//                loadingDialog.dismissDialog();
+//            }
+//        }, 2000);
+//
         return view;
     }
 
