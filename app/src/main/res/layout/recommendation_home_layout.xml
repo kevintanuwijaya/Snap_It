@@ -24,17 +24,19 @@
 
                 <TextView
                     android:id="@+id/recommendation_title"
-                    android:text="Title"
-                    android:textSize="7pt"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:text="Title"
+                    android:textSize="8pt"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/recommendation_address"
-                    android:text="address"
-                    android:textSize="4pt"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="40dp"
+                    android:text="address"
+                    android:textSize="7pt" />
             </LinearLayout>
 
     </LinearLayout>
