@@ -40,7 +40,7 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
     public void onBindViewHolder(@NonNull RecommendationAdapter.ViewHolder holder, int position) {
         Picasso.get().load(locations.get(position).getImage()).into(holder.image);
         holder.title.setText(locations.get(position).getName());
-        holder.distance.setText(Double.toString(locations.get(position).getDistance()) + " km from your current location");
+        holder.distance.setText(Double.toString(locations.get(position).getDistance()) + " meters from your current location");
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
