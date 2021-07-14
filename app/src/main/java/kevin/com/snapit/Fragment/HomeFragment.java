@@ -204,7 +204,7 @@ public class HomeFragment extends Fragment {
         }
 
         // For Article
-        int[] articleImage = {R.drawable.articel1, R.drawable.articel2};
+        int[] articleImage = {R.drawable.articel1, R.drawable.articel2,R.drawable.articel3,R.drawable.articel4,R.drawable.articel5};
         String[] articleTitle = getResources().getStringArray(R.array.articelTitle);
         String[] articelContain = getResources().getStringArray(R.array.articelContain);
         String[] articleAuthor = getResources().getStringArray(R.array.articelAuthor);
