@@ -178,7 +178,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             File file = new File(getRealPathFromURI(image_uri));
             captureIntent.putExtra(MediaStore.EXTRA_OUTPUT,image_uri.toString());
             captureIntent.putExtra("FILE_NAME",file.getName());
-            captureIntent.putExtra("FILE_PATH",file.getParent());
+            //TODO ganti ke absolute path dulu
+            captureIntent.putExtra("FILE_PATH",file.getAbsolutePath());
             startActivity(captureIntent);
         }
 //        if(requestCode == EMAIL_REQUEST_CODE){

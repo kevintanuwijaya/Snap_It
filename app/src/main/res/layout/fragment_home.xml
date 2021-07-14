@@ -19,7 +19,7 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/home_toolbar"
-                app:menu="@menu/toolbar_menu"
+                app:title="Snap It"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize">
 

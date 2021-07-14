@@ -65,6 +65,8 @@ public class ImageCaptureActivity extends AppCompatActivity {
     private CloudDBZoneConfig mConfig;
     private CloudDBZone mCloudDBZone;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +106,6 @@ public class ImageCaptureActivity extends AppCompatActivity {
                 //TODO belum save imagenya;
                 Log.d(TAG,"Image Saved");
                 login();
-                uploadFile();
             }
         });
     }
@@ -131,18 +132,19 @@ public class ImageCaptureActivity extends AppCompatActivity {
         }
 
 
-        File file = new File(imagePath+"/"+imageName);
+        File file = new File(imagePath /*+ "/" + imageName*/);
         Log.d(TAG,imagePath);
+        Log.d(TAG,imageName);
 
         if(!file.isFile()){
             Log.d(TAG,"File not Found");
             return;
         }
 
-        StorageReference storageReference = agcStorageManagement.getStorageReference(files + imageName);
+        StorageReference storageReference = agcStorageManagement.getStorageReference(files + "1");
+        Log.d(TAG, "uploadFile: " + storageReference);
 
         try {
-            Log.d(TAG,storageReference.toString());
             UploadTask uploadTask = storageReference.putFile(file);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -167,7 +169,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
             }).addOnProgressListener(new OnProgressListener<UploadTask.UploadResult>() {
                 @Override
                 public void onProgress(UploadTask.UploadResult uploadResult) {
-
+                    Log.d(TAG, "onProgress: ");
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.UploadResult>() {
                 @Override
@@ -183,12 +185,16 @@ public class ImageCaptureActivity extends AppCompatActivity {
     private void login() {
         if (AGConnectAuth.getInstance().getCurrentUser() != null) {
             Log.d(TAG,"Already Sign-in");
+            uploadFile();
+
             return;
         }
         AGConnectAuth.getInstance().signInAnonymously().addOnSuccessListener(new OnSuccessListener<SignInResult>() {
             @Override
             public void onSuccess(SignInResult signInResult) {
                 Log.d(TAG,"Sign In Success");
+                uploadFile();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
