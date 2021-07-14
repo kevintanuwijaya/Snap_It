@@ -141,7 +141,7 @@ public class ImageCaptureActivity extends AppCompatActivity {
             return;
         }
 
-        StorageReference storageReference = agcStorageManagement.getStorageReference(files + "1");
+        StorageReference storageReference = agcStorageManagement.getStorageReference(files + imageName);
         Log.d(TAG, "uploadFile: " + storageReference);
 
         try {
