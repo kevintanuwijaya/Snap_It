@@ -2,6 +2,8 @@ package kevin.com.snapit.Adapter;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +44,11 @@ public class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,settings.get(position).getName(),Toast.LENGTH_SHORT).show();
+                if(position==0){
+                    Uri uri = Uri.parse("https://www.termsfeed.com/live/958e4ac8-29ec-47a6-809c-2234a2d287c3");
+                    Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                    context.startActivity(intent);
+                }
             }
         });
     }

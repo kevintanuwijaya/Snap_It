@@ -58,6 +58,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         SettingsAdapter settingAdapter = new SettingsAdapter(this,settings);
         recycleSetting.setAdapter(settingAdapter);
         recycleSetting.setLayoutManager(new LinearLayoutManager(this));
+
         back.setOnClickListener(this);
         logoutBtn.setOnTouchListener(new View.OnTouchListener() {
             @Override
