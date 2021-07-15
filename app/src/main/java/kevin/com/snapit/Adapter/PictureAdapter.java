@@ -41,7 +41,6 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.ViewHold
     public PictureAdapter(Context context, ArrayList<String> pictureUrl) {
         this.context = context;
         this.pictureUrl = pictureUrl;
-        Log.d("UserAdapter","DAPET");
     }
 
 

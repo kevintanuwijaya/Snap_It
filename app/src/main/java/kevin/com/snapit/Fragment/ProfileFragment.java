@@ -1,12 +1,15 @@
 package kevin.com.snapit.Fragment;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -129,6 +132,7 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
         AGConnectInstance.initialize(getContext());
         AGConnectCloudDB.initialize(getContext());
         initDB();
+        requestPermission();
 
         LoadingDialog loadingDialog = new LoadingDialog(getContext());
         loadingDialog.startDialog();
@@ -253,6 +257,16 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
                 reloadPage();
             }
         });
+    }
+
+    private void requestPermission(){
+
+        boolean writeExternalPermission = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean readExternalPermission = ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if(!writeExternalPermission && !readExternalPermission){
+            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+            ActivityCompat.requestPermissions(getActivity(),permission,1);
+        }
     }
 
     private void reloadPage(){
