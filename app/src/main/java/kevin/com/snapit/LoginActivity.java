@@ -1,5 +1,8 @@
 package kevin.com.snapit;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +42,8 @@ import kevin.com.snapit.Model.Users;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    // Define the request code for signInIntent.
+    private static final int REQUEST_CODE_SIGN_IN = 2222;
 
     private AGConnectCloudDB mCloudDB;
     private CloudDBZone mCloudDBZone;
@@ -57,13 +62,54 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+
+        ActivityResultLauncher<Intent> intentLaunch = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result ->  {
+                    if (result.getResultCode() == REQUEST_CODE_SIGN_IN) {
+
+                    }
+                }
+        );
+
         switch (v.getId()) {
             case R.id.login_btn:
                 AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setProfile().setMobileNumber().createParams();
                 AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
-                startActivityForResult(service1.getSignInIntent(), 2222);
+                // Use silent sign-in to sign in with a HUAWEI ID.
+                Task<AuthAccount> task = service1.silentSignIn();
+                task.addOnSuccessListener(new OnSuccessListener<AuthAccount>() {
+                    @Override
+                    public void onSuccess(AuthAccount authAccount) {
+                        // The silent sign-in is successful. Process the returned account object AuthAccount to obtain the HUAWEI ID information.
+                        dealWithResultOfSignIn(authAccount);
+                    }
+                });
+                task.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        // The silent sign-in fails. Use the getSignInIntent() method to show the authorization or sign-in screen.
+                        if (e instanceof ApiException) {
+                            ApiException apiException = (ApiException) e;
+                            Intent signInIntent = service1.getSignInIntent();
+                            startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
+                        }
+                    }
+                });
                 break;
         }
+    }
+
+    private void dealWithResultOfSignIn(AuthAccount authAccount) {
+        // Obtain the HUAWEI DI information.
+        Log.i(TAG, "display name:" + authAccount.getDisplayName());
+        Log.i(TAG, "photo uri string:" + authAccount.getAvatarUriString());
+        Log.i(TAG, "photo uri:" + authAccount.getAvatarUri());
+        Log.i(TAG, "email:" + authAccount.getEmail());
+        Log.i(TAG, "openid:" + authAccount.getOpenId());
+        Log.i(TAG, "unionid:" + authAccount.getUnionId());
+        // TODO: Implement service logic after the HUAWEI ID information is obtained.
+
     }
 
     private void initDB(){
@@ -99,15 +145,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        // Process the authorization result to obtain the authorization code from AuthAccount.
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2222) {
+        if (requestCode == REQUEST_CODE_SIGN_IN) {
+            Log.i(TAG, "onActivitResult of sigInInIntent, request code: " + REQUEST_CODE_SIGN_IN);
             Task<AuthAccount> authAccountTask = AccountAuthManager.parseAuthResultFromIntent(data);
+            Toast toast = Toast.makeText(this, "ERROR", Toast.LENGTH_LONG);
+            toast.show();
             if (authAccountTask.isSuccessful()) {
-                // The sign-in is successful, and the user's ID information and authorization code are obtained.
+                // The sign-in is successful, and the authAccount object that contains the HUAWEI ID information is obtained.
                 AuthAccount authAccount = authAccountTask.getResult();
-                Log.i(TAG, "serverAuthCode:" + authAccount.getAuthorizationCode());
+                dealWithResultOfSignIn(authAccount);
+                Log.i(TAG, "onActivitResult of sigInInIntent, request code: " + REQUEST_CODE_SIGN_IN);
 
                 if(authAccount.getEmail() == null){
                     Toast.makeText(this,"Please enable all the autorization",Toast.LENGTH_SHORT).show();
@@ -138,12 +187,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                 },2000);
             } else {
-                // The sign-in failed.
-                Log.e(TAG, "sign in failed:" + ((ApiException) authAccountTask.getException()).getStatusCode());
+                // The sign-in fails. Find the failure cause from the status code. For more information, please refer to the "Error Codes" section in the API Reference.
+                Log.e(TAG, "sign in failed : " +((ApiException)authAccountTask.getException()).getStatusCode());
                 startActivity(new Intent(this, MainActivity.class));
             }
         }
     }
+
 
     public void queryUsers(CloudDBZoneQuery<Users> query) {
         if (mCloudDBZone == null) {
