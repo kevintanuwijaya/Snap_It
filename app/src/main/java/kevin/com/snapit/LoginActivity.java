@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
 import com.huawei.agconnect.cloud.database.CloudDBZone;
@@ -50,9 +51,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         findViewById(R.id.login_btn).setOnClickListener(this);
-
         initDB();
     }
 
@@ -109,6 +108,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 // The sign-in is successful, and the user's ID information and authorization code are obtained.
                 AuthAccount authAccount = authAccountTask.getResult();
                 Log.i(TAG, "serverAuthCode:" + authAccount.getAuthorizationCode());
+
+                if(authAccount.getEmail() == null){
+                    Toast.makeText(this,"Please enable all the autorization",Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Log.d("Database",""+authAccount.getEmail());
 
