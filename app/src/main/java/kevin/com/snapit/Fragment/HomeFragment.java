@@ -238,7 +238,7 @@ public class HomeFragment extends Fragment {
                         searchNearby(iconName[index], PoiLocationType[index]);
                     }
                 }
-            }, 1000);
+            }, 3000);
 
         new Handler().postDelayed(new Runnable() {
             @Override

@@ -7,47 +7,54 @@
     tools:context=".CategoryOnMapActivity">
 
 
-    <fragment
-        android:id="@+id/mapFragment"
-        class="com.huawei.hms.maps.SupportMapFragment"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="407dp"
-        app:cameraZoom="10" />
+        android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/detail_layout"
-        android:layout_width="match_parent"
-        android:layout_height="301dp"
-        android:layout_gravity="bottom"
-        android:background="@drawable/rounded_item"
-        android:padding="10dp"
-        tools:layout_editor_absoluteX="134dp"
-        tools:layout_editor_absoluteY="93dp">
-
-        <ImageView
-            android:id="@+id/detail_image"
-            android:layout_width="298dp"
-            android:layout_height="134dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/detail_title"
+        <fragment
+            android:id="@+id/mapFragment"
+            class="com.huawei.hms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="40dp"
-            android:textAlignment="center"
-            android:textColor="@color/cardview_dark_background"
-            android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.157"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/detail_image" />
+            android:layout_height="350dp"
+            app:cameraZoom="10" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/detail_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_item"
+            android:padding="10dp"
+            android:layout_below="@+id/mapFragment"
+            tools:layout_editor_absoluteX="134dp"
+            tools:layout_editor_absoluteY="93dp">
+
+            <ImageView
+                android:id="@+id/detail_image"
+                android:layout_width="298dp"
+                android:layout_height="134dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.495"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="40dp"
+                android:textAlignment="center"
+                android:textColor="@color/cardview_dark_background"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.157"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/detail_image" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

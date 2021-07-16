@@ -266,6 +266,8 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
         if(!writeExternalPermission && !readExternalPermission){
             String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
             ActivityCompat.requestPermissions(getActivity(),permission,1);
+        }else{
+            requestPermission();
         }
     }
 

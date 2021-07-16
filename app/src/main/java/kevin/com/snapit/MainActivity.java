@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         requestPermissions(permission,PERMISSION_CODE);
                     }else{
                         openCamera();
-
                     }
                 }else{
                     openCamera();

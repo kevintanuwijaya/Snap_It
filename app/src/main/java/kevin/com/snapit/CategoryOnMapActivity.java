@@ -14,6 +14,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hms.common.ApiException;
@@ -66,7 +68,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
-    private LatLng currPosition;
+    private LatLng currPosition = new LatLng(1,1);
 
     private SearchService searchService;
     private List<Site> sites = new ArrayList<Site>();
@@ -102,7 +104,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
                     }
                 }, 3000);
             }
-        }, 1000);
+        }, 3000);
 
 
     }
@@ -123,7 +125,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
         Log.d(TAG, "searchNearby: " + getPoiType(query));
         request.setLocation(location);
         request.setQuery(query);
-        request.setRadius(10);
+        request.setRadius(20000);
         request.setHwPoiType(getPoiType(query));
         request.setLanguage("en");
         request.setPageIndex(1);
@@ -149,6 +151,7 @@ public class CategoryOnMapActivity extends AppCompatActivity implements OnMapRea
             // Return the result code and description upon a search exception.
             @Override
             public void onSearchError(SearchStatus status) {
+                Toast.makeText(CategoryOnMapActivity.this,"Search Error, Please try again later ",Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
             }
         };
