@@ -63,78 +63,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-        ActivityResultLauncher<Intent> intentLaunch = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),result -> {
-                    if(result.getResultCode() == 2222){
-                        Task<AuthAccount> authAccountTask = AccountAuthManager.parseAuthResultFromIntent(getIntent());
-                        Toast toast = Toast.makeText(this, "ERROR", Toast.LENGTH_LONG);
-                        toast.show();
-                        if(authAccountTask.isSuccessful()){
-                            AuthAccount authAccount = authAccountTask.getResult();
-                            dealWithResultOfSignIn(authAccount);
-                        }
-                    }
-                }
-        );
 
         switch (v.getId()) {
             case R.id.login_btn:
                 AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setProfile().setMobileNumber().createParams();
                 AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
                 // Use silent sign-in to sign in with a HUAWEI ID.
-                Task<AuthAccount> task = service1.silentSignIn();
-                task.addOnSuccessListener(new OnSuccessListener<AuthAccount>() {
-                    @Override
-                    public void onSuccess(AuthAccount authAccount) {
-                        // The silent sign-in is successful. Process the returned account object AuthAccount to obtain the HUAWEI ID information.
-                        dealWithResultOfSignIn(authAccount);
-                    }
-                });
-                task.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        // The silent sign-in fails. Use the getSignInIntent() method to show the authorization or sign-in screen.
-                        if (e instanceof ApiException) {
-                            ApiException apiException = (ApiException) e;
-                            Intent signInIntent = service1.getSignInIntent();
-                            startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN);
-                        }
-                    }
-                });
-                break;
+                startActivityForResult(service1.getSignInIntent(), 2222);
         }
     }
 
-    private void dealWithResultOfSignIn(AuthAccount authAccount) {
-        if(authAccount.getEmail() == null){
-            Toast.makeText(this,"Please enable all the autorization",Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Log.d("Database",""+authAccount.getEmail());
-
-        CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).equalTo("users_email",authAccount.getEmail());
-
-        queryUsers(query);
-
-        loadingDialog.startDialog();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(users.isEmpty()){
-                    loadingDialog.dismissDialog();
-                    Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
-                    registerIntent.putExtra("EMAIL",authAccount.getEmail());
-                    registerIntent.putExtra("FIRST_NAME",authAccount.getGivenName());
-                    registerIntent.putExtra("LAST_NAME",authAccount.getFamilyName());
-                    startActivity(registerIntent);
-                }else{
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                }
-            }
-        },2000);
-    }
 
     private void initDB(){
         AGConnectCloudDB.initialize(this);
@@ -168,55 +106,52 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == REQUEST_CODE_SIGN_IN) {
-//            Log.i(TAG, "onActivitResult of sigInInIntent, request code: " + REQUEST_CODE_SIGN_IN);
-//            Task<AuthAccount> authAccountTask = AccountAuthManager.parseAuthResultFromIntent(data);
-//            Toast toast = Toast.makeText(this, "ERROR", Toast.LENGTH_LONG);
-//            toast.show();
-//            if (authAccountTask.isSuccessful()) {
-//                // The sign-in is successful, and the authAccount object that contains the HUAWEI ID information is obtained.
-//                AuthAccount authAccount = authAccountTask.getResult();
-//                dealWithResultOfSignIn(authAccount);
-//                Log.i(TAG, "onActivitResult of sigInInIntent, request code: " + REQUEST_CODE_SIGN_IN);
-//
-//                if(authAccount.getEmail() == null){
-//                    Toast.makeText(this,"Please enable all the autorization",Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                Log.d("Database",""+authAccount.getEmail());
-//
-//                CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).equalTo("users_email",authAccount.getEmail());
-//
-//                queryUsers(query);
-//
-//                loadingDialog.startDialog();
-//
-//                new Handler().postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        if(users.isEmpty()){
-//                            loadingDialog.dismissDialog();
-//                            Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
-//                            registerIntent.putExtra("EMAIL",authAccount.getEmail());
-//                            registerIntent.putExtra("FIRST_NAME",authAccount.getGivenName());
-//                            registerIntent.putExtra("LAST_NAME",authAccount.getFamilyName());
-//                            startActivity(registerIntent);
-//                        }else{
-//                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                        }
-//                    }
-//                },2000);
-//            } else {
-//                // The sign-in fails. Find the failure cause from the status code. For more information, please refer to the "Error Codes" section in the API Reference.
-//                Log.e(TAG, "sign in failed : " +((ApiException)authAccountTask.getException()).getStatusCode());
-//                startActivity(new Intent(this, MainActivity.class));
-//            }
-//        }
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SIGN_IN) {
+            Log.i(TAG, "onActivitResult of sigInInIntent, request code: " + REQUEST_CODE_SIGN_IN);
+            Task<AuthAccount> authAccountTask = AccountAuthManager.parseAuthResultFromIntent(data);
+            if (authAccountTask.isSuccessful()) {
+                // The sign-in is successful, and the authAccount object that contains the HUAWEI ID information is obtained.
+                AuthAccount authAccount = authAccountTask.getResult();
+                Log.i(TAG, "onActivitResult of sigInInIntent, request code: " + REQUEST_CODE_SIGN_IN);
+
+                if(authAccount.getEmail() == null){
+                    Toast.makeText(this,"Please enable all the autorization",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Log.d("Database",""+authAccount.getEmail());
+
+                CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).equalTo("users_email",authAccount.getEmail());
+
+                queryUsers(query);
+
+                loadingDialog.startDialog();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(users.isEmpty()){
+                            loadingDialog.dismissDialog();
+                            Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
+                            registerIntent.putExtra("EMAIL",authAccount.getEmail());
+                            registerIntent.putExtra("FIRST_NAME",authAccount.getGivenName());
+                            registerIntent.putExtra("LAST_NAME",authAccount.getFamilyName());
+                            startActivity(registerIntent);
+                        }else{
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        }
+                    }
+                },2000);
+            } else {
+                // The sign-in fails. Find the failure cause from the status code. For more information, please refer to the "Error Codes" section in the API Reference.
+                Log.e(TAG, "sign in failed : " +((ApiException)authAccountTask.getException()).getStatusCode());
+                startActivity(new Intent(this, MainActivity.class));
+            }
+        }
+    }
 
 
     public void queryUsers(CloudDBZoneQuery<Users> query) {
