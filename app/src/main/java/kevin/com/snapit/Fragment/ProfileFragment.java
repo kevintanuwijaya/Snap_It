@@ -167,6 +167,17 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
         },1000);
     }
 
+    private void requestPermission(){
+
+        boolean writeExternalPermission = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean readExternalPermission = ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean manageExternalStorage = ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.MANAGE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        if(!writeExternalPermission && !readExternalPermission){
+            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.MANAGE_EXTERNAL_STORAGE};
+            ActivityCompat.requestPermissions(getActivity(),permission,1);
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -257,16 +268,6 @@ public class ProfileFragment extends Fragment implements Toolbar.OnMenuItemClick
                 reloadPage();
             }
         });
-    }
-
-    private void requestPermission(){
-
-        boolean writeExternalPermission = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        boolean readExternalPermission = ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        if(!writeExternalPermission && !readExternalPermission){
-            String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-            ActivityCompat.requestPermissions(getActivity(),permission,1);
-        }
     }
 
     private void reloadPage(){
