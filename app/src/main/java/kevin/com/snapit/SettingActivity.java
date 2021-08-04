@@ -68,12 +68,12 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
                     public void onComplete(Task<Void> task) {
                         if (task.isSuccessful()) {
                             Log.i(TAG, "onSuccess: ");
-                            Intent intent1 = new Intent(SettingActivity.this,LoginActivity.class);
-                            startActivity(intent1);
+                            Intent logout = new Intent(SettingActivity.this,LoginActivity.class);
+                            logout.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(logout);
                         } else {
                             // Handle the exception.
-                            Exception exception = task.getException();
-                            if (exception instanceof ApiException){
+                            Exception exception = task.getException();                            if (exception instanceof ApiException){
                                 int statusCode = ((ApiException) exception).getStatusCode();
                                 Log.i(TAG, "onFailure: " + statusCode);
                             }

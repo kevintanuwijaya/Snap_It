@@ -14,6 +14,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.huawei.agconnect.auth.AGConnectAuth;
+import com.huawei.agconnect.auth.AGConnectUser;
+import com.huawei.agconnect.auth.SignInResult;
 import com.huawei.agconnect.cloud.database.AGConnectCloudDB;
 import com.huawei.agconnect.cloud.database.CloudDBZone;
 import com.huawei.agconnect.cloud.database.CloudDBZoneConfig;
@@ -51,22 +54,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ListenerHandler mRegister;
     private List<Users> users = new ArrayList<>();
     private LoadingDialog loadingDialog = new LoadingDialog(this);
+    private AGConnectUser anonymousUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        findViewById(R.id.login_btn).setOnClickListener(this);
+        findViewById(R.id.HuaweiIdAuthButton).setOnClickListener(this);
         initDB();
     }
 
     @Override
     public void onClick(View v) {
-
-
         switch (v.getId()) {
-            case R.id.login_btn:
-                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM).setAuthorizationCode().setEmail().setProfile().setMobileNumber().createParams();
+            case R.id.HuaweiIdAuthButton:
+                AccountAuthParams authParams1 = new AccountAuthParamsHelper(AccountAuthParams.DEFAULT_AUTH_REQUEST_PARAM)
+                                                .setAuthorizationCode()
+                                                .setEmail()
+                                                .setProfile()
+                                                .setMobileNumber()
+                                                .createParams();
                 AccountAuthService service1 = AccountAuthManager.getService(LoginActivity.this, authParams1);
                 // Use silent sign-in to sign in with a HUAWEI ID.
                 startActivityForResult(service1.getSignInIntent(), 2222);
@@ -77,7 +85,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void initDB(){
         AGConnectCloudDB.initialize(this);
         mCloudDB = AGConnectCloudDB.getInstance();
-
 
         try {
             mCloudDB.createObjectType(ObjectTypeInfoHelper.getObjectTypeInfo());
@@ -122,7 +129,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     return;
                 }
 
-                Log.d("Database",""+authAccount.getEmail());
+                Log.d("Database","" + authAccount.getEmail());
 
                 CloudDBZoneQuery<Users> query = CloudDBZoneQuery.where(Users.class).equalTo("users_email",authAccount.getEmail());
 
@@ -134,21 +141,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void run() {
                         if(users.isEmpty()){
-                            loadingDialog.dismissDialog();
-                            Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
-                            registerIntent.putExtra("EMAIL",authAccount.getEmail());
-                            registerIntent.putExtra("FIRST_NAME",authAccount.getGivenName());
-                            registerIntent.putExtra("LAST_NAME",authAccount.getFamilyName());
-                            startActivity(registerIntent);
-                        }else{
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            String name = authAccount.getGivenName() + " " + authAccount.getFamilyName();
+
+                            Users user = new Users();
+                            user.setUsers_email(authAccount.getEmail());
+                            user.setUsers_name(name);
+
+                            signInAnonymous(user);
                         }
+
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     }
                 },2000);
             } else {
                 // The sign-in fails. Find the failure cause from the status code. For more information, please refer to the "Error Codes" section in the API Reference.
                 Log.e(TAG, "sign in failed : " +((ApiException)authAccountTask.getException()).getStatusCode());
-                startActivity(new Intent(this, MainActivity.class));
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         }
     }
@@ -176,15 +186,50 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void processQueryResult(CloudDBZoneSnapshot<Users> snapshot) {
         CloudDBZoneObjectList<Users> queryResultUser = snapshot.getSnapshotObjects();
         try {
-            while (queryResultUser.hasNext()) {
+            do {
                 Users user = queryResultUser.next();
+                if (user == null) break;
                 users.add(user);
                 Log.d("DATABASE",user.getUsers_email()+" is added");
-            }
+            } while (queryResultUser.hasNext());
         } catch (AGConnectCloudDBException e) {
             Log.w(TAG, "processQueryResult: " + e.getMessage());
         }
         snapshot.release();
+    }
+
+    private void upsertUserInformation(Users users) {
+        if (mCloudDBZone == null) {
+            Log.w(TAG, "CloudDBZone is null, try re-openit");
+            return;
+        }
+        Task<Integer> upsertTask = mCloudDBZone.executeUpsert(users);
+        upsertTask.addOnSuccessListener(new OnSuccessListener<Integer>() {
+            @Override
+            public void onSuccess(Integer cloudDBZoneResult) {
+                Log.w(TAG, "upsert " + cloudDBZoneResult + " records");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                Log.d(TAG,"Upsert Failed");
+            }
+        });
+    }
+
+    private void signInAnonymous(Users user){
+        AGConnectAuth.getInstance().signInAnonymously().addOnSuccessListener(new OnSuccessListener<SignInResult>() {
+            @Override
+            public void onSuccess(SignInResult signInResult) {
+                anonymousUser = signInResult.getUser();
+                upsertUserInformation(user);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+
+            }
+        });
     }
 
     @Override

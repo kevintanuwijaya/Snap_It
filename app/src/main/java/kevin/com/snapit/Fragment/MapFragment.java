@@ -69,7 +69,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     private MapView mMapView;
     private HuaweiMap hMap;
 
-
     public MapFragment() {
         // Required empty public constructor
     }

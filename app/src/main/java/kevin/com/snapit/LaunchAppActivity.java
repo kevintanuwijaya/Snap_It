@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
@@ -56,16 +57,21 @@ public class LaunchAppActivity extends AppCompatActivity {
                     public void run() {
                         name.setVisibility(View.VISIBLE);
                         Task<AuthAccount> silentSignin = accountAuthService.silentSignIn();
+                        Toast.makeText(LaunchAppActivity.this, "inside Silent", Toast.LENGTH_SHORT);
                         silentSignin.addOnSuccessListener(new OnSuccessListener<AuthAccount>() {
                             @Override
                             public void onSuccess(AuthAccount authAccount) {
-                                Intent successIntent = new Intent(LaunchAppActivity.this,MainActivity.class);
+                                Toast.makeText(LaunchAppActivity.this, "Silent success", Toast.LENGTH_SHORT);
+                                Intent successIntent = new Intent(LaunchAppActivity.this, MainActivity.class);
+                                successIntent.setFlags (Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(successIntent);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(Exception e) {
+                                Toast.makeText(LaunchAppActivity.this, "Silent fail", Toast.LENGTH_SHORT);
                                 Intent failIntent = new Intent(LaunchAppActivity.this, LoginActivity.class);
+                                failIntent.setFlags (Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(failIntent);
                             }
                         });
